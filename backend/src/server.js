@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -36,25 +35,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// ======================
-// Rate Limiting
-// ======================
-
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // Limit each IP to 100 requests per windowMs
-  message: {
-    status: 429,
-    error: 'Too many requests',
-    message: 'You have exceeded the rate limit. Please try again later.'
-  },
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-});
-
-// Apply rate limiting to all requests
-app.use(limiter);
 
 // ======================
 // Body Parsing Middleware
