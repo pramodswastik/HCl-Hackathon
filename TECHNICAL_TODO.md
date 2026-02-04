@@ -101,17 +101,17 @@
   - [x] Track stock history
 
 ### 2.6 Order Management API
-- [ ] **Order Operations**
-  - [ ] `POST /orders` - Create order
-  - [ ] `GET /orders` - List user orders (paginated)
-  - [ ] `GET /orders/:id` - Get order details
-  - [ ] `PUT /orders/:id/status` - Update status (Admin)
+- [x] **Order Operations**
+  - [x] `POST /orders` - Create order
+  - [x] `GET /orders` - List user orders (paginated)
+  - [x] `GET /orders/:id` - Get order details
+  - [x] `PUT /orders/:id/status` - Update status (Admin)
 
-- [ ] **Order Features**
-  - [ ] Calculate order total with tax
-  - [ ] Apply add-ons pricing
-  - [ ] Store order history
-  - [ ] Quick re-order functionality
+- [x] **Order Features**
+  - [x] Calculate order total with tax
+  - [x] Apply add-ons pricing
+  - [x] Store order history
+  - [x] Quick re-order functionality
 
 ### 2.7 API Documentation
 - [ ] Set up Swagger/OpenAPI

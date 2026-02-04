@@ -10,11 +10,13 @@ const router = express.Router();
 const authRoutes = require('./authRoutes');
 const categoryRoutes = require('./categoryRoutes');
 const productRoutes = require('./productRoutes');
+const orderRoutes = require('./orderRoutes');
 
 // Mount routes
 router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/products', productRoutes);
+router.use('/orders', orderRoutes);
 
 // API Info
 router.get('/', (req, res) => {
@@ -59,6 +61,15 @@ router.get('/', (req, res) => {
         updateStock: 'PUT /api/products/:id/stock (Admin)',
         stockHistory: 'GET /api/products/:id/stock/history (Admin)',
         lowStock: 'GET /api/products/low-stock (Admin)'
+      },
+      orders: {
+        create: 'POST /api/orders',
+        list: 'GET /api/orders',
+        get: 'GET /api/orders/:id',
+        updateStatus: 'PUT /api/orders/:id/status (Admin)',
+        reorder: 'POST /api/orders/:id/reorder',
+        stats: 'GET /api/orders/stats (Admin)',
+        history: 'GET /api/orders/history'
       }
     }
   });
