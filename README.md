@@ -9,14 +9,12 @@ A robust, scalable e-commerce Single Page Application (SPA) designed for efficie
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [API Documentation](#api-documentation)
 - [Database Schema](#database-schema)
 - [Authentication & Authorization](#authentication--authorization)
 - [Deployment](#deployment)
-- [Contributing](#contributing)
 
 ---
 
@@ -249,12 +247,6 @@ This project aims to develop a robust, scalable e-commerce platform that handles
 ---
 
 ## 📖 API Documentation
-
-### Base URL
-```
-Development: http://localhost:5000/api/v1
-Production: https://api.retail-portal.com/v1
-```
 
 ### Authentication Endpoints
 | Method | Endpoint | Description |
