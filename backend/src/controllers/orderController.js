@@ -481,6 +481,76 @@ const reorder = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc    Get all orders for admin (paginated)
+ * @route   GET /api/orders/admin/all
+ * @access  Private/Admin
+ */
+const getAllOrders = asyncHandler(async (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    status,
+    startDate,
+    endDate,
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  } = req.query;
+
+  // Build query
+  const query = {};
+
+  // Filter by status
+  if (status) {
+    query.status = status;
+  }
+
+  // Filter by date range
+  if (startDate || endDate) {
+    query.createdAt = {};
+    if (startDate) {
+      query.createdAt.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      query.createdAt.$lte = new Date(endDate);
+    }
+  }
+
+  // Calculate pagination
+  const pageNum = parseInt(page, 10);
+  const limitNum = parseInt(limit, 10);
+  const skip = (pageNum - 1) * limitNum;
+
+  // Sort options
+  const sortOptions = {};
+  sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+  // Execute query
+  const [orders, total] = await Promise.all([
+    Order.find(query)
+      .populate('user', 'firstName lastName email')
+      .populate('items.product', 'name slug images')
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNum)
+      .lean(),
+    Order.countDocuments(query)
+  ]);
+
+  res.json({
+    success: true,
+    data: orders,
+    pagination: {
+      page: pageNum,
+      totalPages: Math.ceil(total / limitNum),
+      total: total,
+      limit: limitNum,
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
+});
+
+/**
  * @desc    Get order statistics (Admin only)
  * @route   GET /api/orders/stats
  * @access  Private/Admin
@@ -562,5 +632,6 @@ module.exports = {
   updateOrderStatus,
   reorder,
   getOrderStats,
-  getOrderHistory
+  getOrderHistory,
+  getAllOrders
 };

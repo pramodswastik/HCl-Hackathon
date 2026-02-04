@@ -29,6 +29,8 @@ import AdminDashboard from '@/pages/admin/DashboardPage';
 import AdminProducts from '@/pages/admin/ProductsPage';
 import AdminCategories from '@/pages/admin/CategoriesPage';
 import AdminOrders from '@/pages/admin/OrdersPage';
+import AdminCustomers from '@/pages/admin/CustomersPage';
+import AdminSettings from '@/pages/admin/SettingsPage';
 
 // Components
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -145,6 +147,14 @@ const router = createBrowserRouter([
       {
         path: 'orders',
         element: <AdminOrders />,
+      },
+      {
+        path: 'customers',
+        element: <AdminCustomers />,
+      },
+      {
+        path: 'settings',
+        element: <AdminSettings />,
       },
     ],
   },

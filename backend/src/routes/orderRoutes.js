@@ -13,7 +13,8 @@ const {
   updateOrderStatus,
   reorder,
   getOrderStats,
-  getOrderHistory
+  getOrderHistory,
+  getAllOrders
 } = require('../controllers/orderController');
 
 // Middleware
@@ -29,6 +30,18 @@ const {
 
 // All order routes require authentication
 router.use(authenticate);
+
+/**
+ * @route   GET /api/orders/admin/all
+ * @desc    Get all orders for admin (paginated)
+ * @access  Private/Admin
+ */
+router.get(
+  '/admin/all',
+  authorize('admin'),
+  validate(listOrdersSchema, 'query'),
+  getAllOrders
+);
 
 /**
  * @route   GET /api/orders/stats
