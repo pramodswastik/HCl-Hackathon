@@ -16,225 +16,478 @@ const users = [
   {
     firstName: 'Admin',
     lastName: 'User',
-    email: 'admin@retailportal.com',
+    email: 'admin@foodhub.com',
     password: 'Admin@123456',
     role: 'admin',
     isEmailVerified: true,
     phone: '+1234567890'
   },
   {
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
+    firstName: 'Rahul',
+    lastName: 'Sharma',
+    email: 'rahul.sharma@example.com',
     password: 'Customer@123',
     role: 'customer',
     isEmailVerified: true,
-    phone: '+1987654321',
+    phone: '+919876543210',
     addresses: [
       {
         type: 'home',
-        street: '123 Main Street',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        country: 'USA',
+        street: '42 MG Road',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        zipCode: '400001',
+        country: 'India',
         isDefault: true
       }
     ]
   },
   {
-    firstName: 'Jane',
-    lastName: 'Smith',
-    email: 'jane.smith@example.com',
+    firstName: 'Priya',
+    lastName: 'Patel',
+    email: 'priya.patel@example.com',
     password: 'Customer@123',
     role: 'customer',
     isEmailVerified: true,
-    phone: '+1122334455'
+    phone: '+919988776655'
   }
 ];
 
 const categories = [
   {
-    name: 'Electronics',
-    description: 'Electronic devices and gadgets',
+    name: 'Burgers',
+    description: 'Delicious gourmet burgers with fresh ingredients',
     isActive: true,
     displayOrder: 1
   },
   {
-    name: 'Smartphones',
-    description: 'Mobile phones and accessories',
-    isActive: true,
-    displayOrder: 1,
-    parentName: 'Electronics'
-  },
-  {
-    name: 'Laptops',
-    description: 'Laptops and notebooks',
-    isActive: true,
-    displayOrder: 2,
-    parentName: 'Electronics'
-  },
-  {
-    name: 'Clothing',
-    description: 'Fashion and apparel',
+    name: 'Pizza',
+    description: 'Authentic wood-fired pizzas with premium toppings',
     isActive: true,
     displayOrder: 2
   },
   {
-    name: 'Men\'s Clothing',
-    description: 'Men\'s fashion and apparel',
-    isActive: true,
-    displayOrder: 1,
-    parentName: 'Clothing'
-  },
-  {
-    name: 'Women\'s Clothing',
-    description: 'Women\'s fashion and apparel',
-    isActive: true,
-    displayOrder: 2,
-    parentName: 'Clothing'
-  },
-  {
-    name: 'Home & Kitchen',
-    description: 'Home appliances and kitchenware',
+    name: 'Beverages',
+    description: 'Refreshing drinks and beverages',
     isActive: true,
     displayOrder: 3
   },
   {
-    name: 'Books',
-    description: 'Books and educational materials',
+    name: 'Desserts',
+    description: 'Sweet treats and delicious desserts',
     isActive: true,
     displayOrder: 4
   },
   {
-    name: 'Sports & Outdoors',
-    description: 'Sports equipment and outdoor gear',
+    name: 'Sides',
+    description: 'Perfect accompaniments to your meal',
     isActive: true,
     displayOrder: 5
+  },
+  {
+    name: 'Indian',
+    description: 'Authentic Indian cuisine',
+    isActive: true,
+    displayOrder: 6
   }
 ];
 
 const products = [
+  // Burgers
   {
-    name: 'iPhone 15 Pro Max',
-    description: 'The latest iPhone with A17 Pro chip, titanium design, and advanced camera system.',
-    shortDescription: 'Latest iPhone with A17 Pro chip',
-    price: 1199.99,
-    compareAtPrice: 1299.99,
-    categoryName: 'Smartphones',
-    stock: { quantity: 50, lowStockThreshold: 10 },
+    name: 'Classic Cheese Burger',
+    description: 'Juicy beef patty with melted cheddar cheese, fresh lettuce, tomatoes, onions, pickles, and our special sauce on a toasted sesame bun.',
+    shortDescription: 'Classic beef burger with cheese',
+    price: 249,
+    compareAtPrice: 299,
+    categoryName: 'Burgers',
+    stock: { quantity: 100, lowStockThreshold: 10 },
     status: 'active',
     isFeatured: true,
-    tags: ['apple', 'smartphone', 'premium'],
-    images: [{ url: 'https://placeholder.com/iphone15.jpg', alt: 'iPhone 15 Pro Max', isPrimary: true }]
+    tags: ['burger', 'cheese', 'beef', 'bestseller'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800', alt: 'Classic Cheese Burger', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Cheese', price: 30, isAvailable: true },
+      { name: 'Bacon', price: 50, isAvailable: true },
+      { name: 'Jalapenos', price: 20, isAvailable: true }
+    ]
   },
   {
-    name: 'Samsung Galaxy S24 Ultra',
-    description: 'Samsung\'s flagship phone with S Pen, AI features, and titanium frame.',
-    shortDescription: 'Samsung flagship with S Pen',
-    price: 1099.99,
-    compareAtPrice: 1199.99,
-    categoryName: 'Smartphones',
-    stock: { quantity: 45, lowStockThreshold: 10 },
+    name: 'Crispy Chicken Burger',
+    description: 'Crispy fried chicken breast with coleslaw, pickles, and spicy mayo on a brioche bun.',
+    shortDescription: 'Crispy chicken with spicy mayo',
+    price: 229,
+    categoryName: 'Burgers',
+    stock: { quantity: 80, lowStockThreshold: 10 },
     status: 'active',
     isFeatured: true,
-    tags: ['samsung', 'smartphone', 'android'],
-    images: [{ url: 'https://placeholder.com/galaxy-s24.jpg', alt: 'Samsung Galaxy S24 Ultra', isPrimary: true }]
+    tags: ['burger', 'chicken', 'crispy'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=800', alt: 'Crispy Chicken Burger', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Sauce', price: 15, isAvailable: true },
+      { name: 'Cheese Slice', price: 25, isAvailable: true }
+    ]
   },
   {
-    name: 'MacBook Pro 16" M3 Max',
-    description: 'Powerful laptop with M3 Max chip, up to 128GB RAM, and stunning Liquid Retina XDR display.',
-    shortDescription: 'Powerful laptop with M3 Max chip',
-    price: 3499.99,
-    categoryName: 'Laptops',
-    stock: { quantity: 25, lowStockThreshold: 5 },
-    status: 'active',
-    isFeatured: true,
-    tags: ['apple', 'laptop', 'professional'],
-    images: [{ url: 'https://placeholder.com/macbook-pro.jpg', alt: 'MacBook Pro 16"', isPrimary: true }]
-  },
-  {
-    name: 'Dell XPS 15',
-    description: 'Premium Windows laptop with InfinityEdge display and Intel Core Ultra processor.',
-    shortDescription: 'Premium Windows laptop',
-    price: 1899.99,
-    compareAtPrice: 2099.99,
-    categoryName: 'Laptops',
-    stock: { quantity: 30, lowStockThreshold: 5 },
-    status: 'active',
-    tags: ['dell', 'laptop', 'windows'],
-    images: [{ url: 'https://placeholder.com/dell-xps.jpg', alt: 'Dell XPS 15', isPrimary: true }]
-  },
-  {
-    name: 'Classic Cotton T-Shirt',
-    description: '100% organic cotton t-shirt, comfortable and breathable.',
-    shortDescription: 'Comfortable organic cotton tee',
-    price: 29.99,
-    categoryName: 'Men\'s Clothing',
-    stock: { quantity: 200, lowStockThreshold: 20 },
-    status: 'active',
-    tags: ['clothing', 'casual', 'cotton'],
-    images: [{ url: 'https://placeholder.com/tshirt.jpg', alt: 'Cotton T-Shirt', isPrimary: true }]
-  },
-  {
-    name: 'Summer Floral Dress',
-    description: 'Light and airy floral dress perfect for summer occasions.',
-    shortDescription: 'Light floral summer dress',
-    price: 79.99,
-    compareAtPrice: 99.99,
-    categoryName: 'Women\'s Clothing',
-    stock: { quantity: 75, lowStockThreshold: 10 },
-    status: 'active',
-    tags: ['clothing', 'dress', 'summer'],
-    images: [{ url: 'https://placeholder.com/dress.jpg', alt: 'Summer Floral Dress', isPrimary: true }]
-  },
-  {
-    name: 'Instant Pot Duo 7-in-1',
-    description: 'Multi-use pressure cooker, slow cooker, rice cooker, steamer, and more.',
-    shortDescription: '7-in-1 multi-use pressure cooker',
-    price: 89.99,
-    compareAtPrice: 119.99,
-    categoryName: 'Home & Kitchen',
+    name: 'BBQ Bacon Burger',
+    description: 'Smoky BBQ glazed beef patty topped with crispy bacon, onion rings, and tangy BBQ sauce.',
+    shortDescription: 'BBQ beef burger with bacon',
+    price: 329,
+    compareAtPrice: 379,
+    categoryName: 'Burgers',
     stock: { quantity: 60, lowStockThreshold: 10 },
     status: 'active',
     isFeatured: true,
-    tags: ['kitchen', 'appliance', 'cooking'],
-    images: [{ url: 'https://placeholder.com/instant-pot.jpg', alt: 'Instant Pot Duo', isPrimary: true }]
+    tags: ['burger', 'bbq', 'bacon', 'premium'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=800', alt: 'BBQ Bacon Burger', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Double Patty', price: 100, isAvailable: true },
+      { name: 'Extra Bacon', price: 60, isAvailable: true }
+    ]
   },
   {
-    name: 'The Art of Programming',
-    description: 'Comprehensive guide to software development best practices.',
-    shortDescription: 'Software development guide',
-    price: 49.99,
-    categoryName: 'Books',
-    stock: { quantity: 100, lowStockThreshold: 15 },
+    name: 'Veggie Delight Burger',
+    description: 'Grilled vegetable patty with avocado, sprouts, tomato, and herb mayo on a whole wheat bun.',
+    shortDescription: 'Healthy veggie burger',
+    price: 199,
+    categoryName: 'Burgers',
+    stock: { quantity: 70, lowStockThreshold: 10 },
     status: 'active',
-    tags: ['book', 'programming', 'education'],
-    images: [{ url: 'https://placeholder.com/programming-book.jpg', alt: 'Programming Book', isPrimary: true }]
+    tags: ['burger', 'vegetarian', 'healthy'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1520072959219-c595dc870360?w=800', alt: 'Veggie Delight Burger', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Avocado', price: 40, isAvailable: true },
+      { name: 'Cheese', price: 25, isAvailable: true }
+    ]
   },
+
+  // Pizza
   {
-    name: 'Professional Yoga Mat',
-    description: 'Non-slip yoga mat with extra cushioning for comfort during practice.',
-    shortDescription: 'Non-slip yoga mat with cushioning',
-    price: 45.99,
-    categoryName: 'Sports & Outdoors',
-    stock: { quantity: 80, lowStockThreshold: 10 },
-    status: 'active',
-    tags: ['yoga', 'fitness', 'exercise'],
-    images: [{ url: 'https://placeholder.com/yoga-mat.jpg', alt: 'Yoga Mat', isPrimary: true }]
-  },
-  {
-    name: 'Wireless Bluetooth Earbuds',
-    description: 'High-quality wireless earbuds with active noise cancellation and 24-hour battery life.',
-    shortDescription: 'Wireless earbuds with ANC',
-    price: 149.99,
-    compareAtPrice: 179.99,
-    categoryName: 'Electronics',
-    stock: { quantity: 120, lowStockThreshold: 20 },
+    name: 'Margherita Pizza',
+    description: 'Classic Italian pizza with San Marzano tomato sauce, fresh mozzarella, basil, and extra virgin olive oil.',
+    shortDescription: 'Classic tomato and mozzarella',
+    price: 349,
+    categoryName: 'Pizza',
+    stock: { quantity: 50, lowStockThreshold: 10 },
     status: 'active',
     isFeatured: true,
-    tags: ['audio', 'wireless', 'earbuds'],
-    images: [{ url: 'https://placeholder.com/earbuds.jpg', alt: 'Wireless Earbuds', isPrimary: true }]
+    tags: ['pizza', 'vegetarian', 'classic', 'italian'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800', alt: 'Margherita Pizza', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Cheese', price: 50, isAvailable: true },
+      { name: 'Olives', price: 30, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Pepperoni Supreme',
+    description: 'Loaded with spicy pepperoni, mozzarella cheese, and our signature tomato sauce on a hand-tossed crust.',
+    shortDescription: 'Loaded pepperoni pizza',
+    price: 449,
+    compareAtPrice: 499,
+    categoryName: 'Pizza',
+    stock: { quantity: 45, lowStockThreshold: 10 },
+    status: 'active',
+    isFeatured: true,
+    tags: ['pizza', 'pepperoni', 'bestseller'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=800', alt: 'Pepperoni Supreme', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Pepperoni', price: 60, isAvailable: true },
+      { name: 'Stuffed Crust', price: 80, isAvailable: true }
+    ]
+  },
+  {
+    name: 'BBQ Chicken Pizza',
+    description: 'Grilled chicken, red onions, cilantro, and tangy BBQ sauce with smoked gouda cheese.',
+    shortDescription: 'BBQ chicken with smoked gouda',
+    price: 479,
+    categoryName: 'Pizza',
+    stock: { quantity: 40, lowStockThreshold: 10 },
+    status: 'active',
+    tags: ['pizza', 'chicken', 'bbq'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800', alt: 'BBQ Chicken Pizza', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Chicken', price: 70, isAvailable: true },
+      { name: 'Jalapenos', price: 25, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Veggie Garden Pizza',
+    description: 'Fresh bell peppers, mushrooms, onions, olives, tomatoes, and spinach with a garlic herb base.',
+    shortDescription: 'Fresh vegetable medley',
+    price: 399,
+    categoryName: 'Pizza',
+    stock: { quantity: 55, lowStockThreshold: 10 },
+    status: 'active',
+    tags: ['pizza', 'vegetarian', 'healthy'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1511689660979-10d2b1aada49?w=800', alt: 'Veggie Garden Pizza', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Paneer', price: 50, isAvailable: true },
+      { name: 'Extra Veggies', price: 40, isAvailable: true }
+    ]
+  },
+
+  // Beverages
+  {
+    name: 'Fresh Lime Soda',
+    description: 'Refreshing lime juice with soda, mint, and a hint of black salt.',
+    shortDescription: 'Refreshing lime soda',
+    price: 79,
+    categoryName: 'Beverages',
+    stock: { quantity: 200, lowStockThreshold: 30 },
+    status: 'active',
+    tags: ['drink', 'refreshing', 'lime'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=800', alt: 'Fresh Lime Soda', isPrimary: true }
+    ]
+  },
+  {
+    name: 'Mango Smoothie',
+    description: 'Creamy mango smoothie made with fresh Alphonso mangoes and yogurt.',
+    shortDescription: 'Creamy Alphonso mango smoothie',
+    price: 149,
+    categoryName: 'Beverages',
+    stock: { quantity: 100, lowStockThreshold: 20 },
+    status: 'active',
+    isFeatured: true,
+    tags: ['drink', 'smoothie', 'mango', 'healthy'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=800', alt: 'Mango Smoothie', isPrimary: true }
+    ]
+  },
+  {
+    name: 'Cold Coffee',
+    description: 'Rich and creamy cold coffee blended with vanilla ice cream.',
+    shortDescription: 'Creamy cold coffee',
+    price: 129,
+    categoryName: 'Beverages',
+    stock: { quantity: 150, lowStockThreshold: 25 },
+    status: 'active',
+    tags: ['drink', 'coffee', 'cold'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800', alt: 'Cold Coffee', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Shot', price: 30, isAvailable: true },
+      { name: 'Whipped Cream', price: 20, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Masala Chai',
+    description: 'Traditional Indian spiced tea with cardamom, ginger, and cinnamon.',
+    shortDescription: 'Traditional spiced tea',
+    price: 49,
+    categoryName: 'Beverages',
+    stock: { quantity: 300, lowStockThreshold: 50 },
+    status: 'active',
+    tags: ['drink', 'tea', 'indian', 'traditional'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=800', alt: 'Masala Chai', isPrimary: true }
+    ]
+  },
+
+  // Desserts
+  {
+    name: 'Chocolate Brownie',
+    description: 'Warm fudgy chocolate brownie served with vanilla ice cream and chocolate sauce.',
+    shortDescription: 'Fudgy brownie with ice cream',
+    price: 179,
+    categoryName: 'Desserts',
+    stock: { quantity: 60, lowStockThreshold: 10 },
+    status: 'active',
+    isFeatured: true,
+    tags: ['dessert', 'chocolate', 'brownie'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1564355808539-22fda35bed7e?w=800', alt: 'Chocolate Brownie', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Ice Cream', price: 40, isAvailable: true },
+      { name: 'Nuts', price: 25, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Gulab Jamun',
+    description: 'Soft milk dumplings soaked in rose-flavored sugar syrup, served warm.',
+    shortDescription: 'Traditional Indian sweet',
+    price: 99,
+    categoryName: 'Desserts',
+    stock: { quantity: 80, lowStockThreshold: 15 },
+    status: 'active',
+    tags: ['dessert', 'indian', 'traditional', 'sweet'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1666190094762-2e498bde71e0?w=800', alt: 'Gulab Jamun', isPrimary: true }
+    ]
+  },
+  {
+    name: 'New York Cheesecake',
+    description: 'Creamy classic cheesecake with graham cracker crust and berry compote.',
+    shortDescription: 'Classic creamy cheesecake',
+    price: 229,
+    categoryName: 'Desserts',
+    stock: { quantity: 40, lowStockThreshold: 8 },
+    status: 'active',
+    tags: ['dessert', 'cheesecake', 'premium'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?w=800', alt: 'New York Cheesecake', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Berries', price: 35, isAvailable: true },
+      { name: 'Whipped Cream', price: 20, isAvailable: true }
+    ]
+  },
+
+  // Sides
+  {
+    name: 'French Fries',
+    description: 'Crispy golden french fries seasoned with herbs and served with ketchup.',
+    shortDescription: 'Crispy seasoned fries',
+    price: 99,
+    categoryName: 'Sides',
+    stock: { quantity: 200, lowStockThreshold: 30 },
+    status: 'active',
+    tags: ['sides', 'fries', 'snack'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=800', alt: 'French Fries', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Cheese Dip', price: 30, isAvailable: true },
+      { name: 'Peri Peri Seasoning', price: 20, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Onion Rings',
+    description: 'Crispy battered onion rings served with garlic aioli.',
+    shortDescription: 'Crispy onion rings',
+    price: 129,
+    categoryName: 'Sides',
+    stock: { quantity: 120, lowStockThreshold: 20 },
+    status: 'active',
+    tags: ['sides', 'snack', 'crispy'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1639024471283-03518883512d?w=800', alt: 'Onion Rings', isPrimary: true }
+    ]
+  },
+  {
+    name: 'Chicken Wings',
+    description: 'Crispy fried chicken wings tossed in your choice of buffalo, BBQ, or honey garlic sauce.',
+    shortDescription: 'Crispy wings with sauce',
+    price: 249,
+    compareAtPrice: 299,
+    categoryName: 'Sides',
+    stock: { quantity: 80, lowStockThreshold: 15 },
+    status: 'active',
+    isFeatured: true,
+    tags: ['sides', 'chicken', 'wings', 'spicy'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=800', alt: 'Chicken Wings', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Extra Sauce', price: 25, isAvailable: true },
+      { name: 'Blue Cheese Dip', price: 35, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Garlic Bread',
+    description: 'Toasted garlic bread with herbs and melted butter.',
+    shortDescription: 'Toasted garlic bread',
+    price: 79,
+    categoryName: 'Sides',
+    stock: { quantity: 150, lowStockThreshold: 25 },
+    status: 'active',
+    tags: ['sides', 'bread', 'garlic'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1619535860434-ba1d8fa12536?w=800', alt: 'Garlic Bread', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Cheese Topping', price: 30, isAvailable: true }
+    ]
+  },
+
+  // Indian
+  {
+    name: 'Butter Chicken',
+    description: 'Tender chicken pieces in a rich, creamy tomato-based curry with butter and spices.',
+    shortDescription: 'Creamy tomato chicken curry',
+    price: 349,
+    categoryName: 'Indian',
+    stock: { quantity: 60, lowStockThreshold: 10 },
+    status: 'active',
+    isFeatured: true,
+    tags: ['indian', 'curry', 'chicken', 'bestseller'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=800', alt: 'Butter Chicken', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Naan', price: 40, isAvailable: true },
+      { name: 'Rice', price: 50, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Paneer Tikka',
+    description: 'Marinated cottage cheese cubes grilled to perfection with bell peppers and onions.',
+    shortDescription: 'Grilled marinated paneer',
+    price: 279,
+    categoryName: 'Indian',
+    stock: { quantity: 70, lowStockThreshold: 12 },
+    status: 'active',
+    tags: ['indian', 'paneer', 'vegetarian', 'grilled'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800', alt: 'Paneer Tikka', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Mint Chutney', price: 20, isAvailable: true },
+      { name: 'Extra Paneer', price: 60, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Biryani',
+    description: 'Fragrant basmati rice layered with spiced chicken, caramelized onions, and saffron.',
+    shortDescription: 'Aromatic layered rice dish',
+    price: 299,
+    categoryName: 'Indian',
+    stock: { quantity: 50, lowStockThreshold: 10 },
+    status: 'active',
+    isFeatured: true,
+    tags: ['indian', 'rice', 'biryani', 'chicken'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800', alt: 'Biryani', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Raita', price: 30, isAvailable: true },
+      { name: 'Extra Chicken', price: 80, isAvailable: true }
+    ]
+  },
+  {
+    name: 'Dal Makhani',
+    description: 'Slow-cooked black lentils in a rich, creamy tomato gravy with butter and cream.',
+    shortDescription: 'Creamy black lentil curry',
+    price: 199,
+    categoryName: 'Indian',
+    stock: { quantity: 80, lowStockThreshold: 15 },
+    status: 'active',
+    tags: ['indian', 'dal', 'vegetarian', 'lentils'],
+    images: [
+      { url: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800', alt: 'Dal Makhani', isPrimary: true }
+    ],
+    addOns: [
+      { name: 'Butter Naan', price: 45, isAvailable: true },
+      { name: 'Jeera Rice', price: 50, isAvailable: true }
+    ]
   }
 ];
 
@@ -266,8 +519,8 @@ async function seedCategories() {
   console.log('📁 Seeding categories...');
   const categoryMap = new Map();
   
-  // First pass: Create parent categories
-  for (const catData of categories.filter(c => !c.parentName)) {
+  // Create all categories (no parents in this simplified structure)
+  for (const catData of categories) {
     const category = await Category.create({
       name: catData.name,
       description: catData.description,
@@ -276,20 +529,6 @@ async function seedCategories() {
     });
     categoryMap.set(catData.name, category);
     console.log(`   Created category: ${category.name}`);
-  }
-  
-  // Second pass: Create child categories
-  for (const catData of categories.filter(c => c.parentName)) {
-    const parent = categoryMap.get(catData.parentName);
-    const category = await Category.create({
-      name: catData.name,
-      description: catData.description,
-      isActive: catData.isActive,
-      displayOrder: catData.displayOrder,
-      parent: parent._id
-    });
-    categoryMap.set(catData.name, category);
-    console.log(`   Created subcategory: ${category.name} (under ${catData.parentName})`);
   }
   
   console.log(`✅ Created ${categoryMap.size} categories`);
@@ -335,7 +574,7 @@ async function seedSampleOrder(users, products) {
     return null;
   }
   
-  const orderItems = products.slice(0, 2).map(p => ({
+  const orderItems = products.slice(0, 3).map(p => ({
     product: p._id,
     name: p.name,
     sku: p.sku,
@@ -351,19 +590,19 @@ async function seedSampleOrder(users, products) {
     user: customer._id,
     items: orderItems,
     shippingAddress: customer.addresses?.[0] || {
-      street: '123 Default Street',
-      city: 'New York',
-      state: 'NY',
-      zipCode: '10001',
-      country: 'USA'
+      street: '42 MG Road',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+      zipCode: '400001',
+      country: 'India'
     },
     pricing: {
       subtotal,
       tax,
       taxRate: 0.08,
-      shipping: 9.99,
+      shipping: 0,
       discount: 0,
-      total: subtotal + tax + 9.99
+      total: subtotal + tax
     },
     status: 'confirmed',
     paymentStatus: 'paid',
@@ -405,7 +644,7 @@ async function seed(reset = false) {
     console.log(`   - Categories: ${categoryMap.size}`);
     console.log(`   - Products: ${createdProducts.length}`);
     console.log('\n📧 Admin credentials:');
-    console.log('   Email: admin@retailportal.com');
+    console.log('   Email: admin@foodhub.com');
     console.log('   Password: Admin@123456');
     
   } catch (error) {

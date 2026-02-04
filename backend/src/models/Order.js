@@ -120,7 +120,7 @@ const orderSchema = new mongoose.Schema(
         'cancelled',
         'refunded'
       ],
-      default: 'pending'
+      default: 'confirmed'
     },
     paymentStatus: {
       type: String,

@@ -28,7 +28,7 @@ const orderService = {
   // Create new order
   createOrder: async (orderData) => {
     const response = await api.post(ORDERS_URL, orderData);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Update order status (Admin)

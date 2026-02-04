@@ -151,7 +151,7 @@ const createOrder = asyncHandler(async (req, res) => {
     paymentMethod,
     notes: notes ? { customer: notes } : undefined,
     statusHistory: [{
-      status: 'pending',
+      status: 'confirmed',
       timestamp: new Date(),
       updatedBy: req.user._id
     }]
