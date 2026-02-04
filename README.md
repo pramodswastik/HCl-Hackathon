@@ -2,6 +2,13 @@
 
 A robust, scalable e-commerce Single Page Application (SPA) designed for efficient product catalog management and intuitive shopping experience, featuring a McDonald's-style fast-loading UI pattern.
 
+<img width="1847" height="917" alt="image" src="https://github.com/user-attachments/assets/38c34ea4-e73e-435f-b215-5ad5711748de" />
+<img width="1842" height="920" alt="image" src="https://github.com/user-attachments/assets/bf4443d1-f3d4-4518-9b40-60b26e3fd0b5" />
+<img width="1287" height="892" alt="image" src="https://github.com/user-attachments/assets/e6ba1937-386a-4e05-9d05-a4f49788170c" />
+<img width="1292" height="882" alt="image" src="https://github.com/user-attachments/assets/21c473aa-f491-4f53-b3b8-399f01fc6e72" />
+<img width="1296" height="883" alt="image" src="https://github.com/user-attachments/assets/746b5f68-019c-4a9a-808a-46c03f9c1664" />
+<img width="1755" height="875" alt="image" src="https://github.com/user-attachments/assets/8277bf69-86a1-432c-be13-54fb02ceb842" />
+
 ---
 
 ## 📋 Table of Contents
