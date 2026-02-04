@@ -91,7 +91,7 @@ const authService = {
 
   // Reset password with token
   resetPassword: async (token, password) => {
-    const response = await api.post(`${AUTH_URL}/reset-password`, { token, password });
+    const response = await api.post(`${AUTH_URL}/reset-password/${token}`, { password });
     return response.data;
   },
 
