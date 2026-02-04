@@ -4,7 +4,15 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
+const connectDB = require('./config/database');
+
 const app = express();
+
+// ======================
+// Database Connection
+// ======================
+
+connectDB();
 
 // ======================
 // Security Middleware
