@@ -6,13 +6,13 @@ const categoryService = {
   // Get all categories
   getCategories: async () => {
     const response = await api.get(CATEGORIES_URL);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Get single category by ID
   getCategory: async (id) => {
     const response = await api.get(`${CATEGORIES_URL}/${id}`);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Create category (Admin)
@@ -22,7 +22,7 @@ const categoryService = {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Update category (Admin)
@@ -32,7 +32,7 @@ const categoryService = {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Delete category (Admin)
@@ -48,19 +48,19 @@ const categoryService = {
     if (params.limit) queryParams.append('limit', params.limit);
     
     const response = await api.get(`${CATEGORIES_URL}/${id}/products?${queryParams.toString()}`);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Get root categories (no parent)
   getRootCategories: async () => {
     const response = await api.get(`${CATEGORIES_URL}?root=true`);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Get subcategories of a category
   getSubcategories: async (parentId) => {
     const response = await api.get(`${CATEGORIES_URL}?parent=${parentId}`);
-    return response.data;
+    return response.data.data || response.data;
   },
 };
 

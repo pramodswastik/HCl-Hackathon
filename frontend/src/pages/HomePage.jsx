@@ -231,8 +231,10 @@ const HomePage = () => {
 
   useEffect(() => {
     // Filter featured products or show first 8
-    const featured = products.filter(p => p.isFeatured);
-    setFeaturedProducts(featured.length > 0 ? featured : products.slice(0, 8));
+    if (products && products.length > 0) {
+      const featured = products.filter(p => p.isFeatured);
+      setFeaturedProducts(featured.length > 0 ? featured : products.slice(0, 8));
+    }
   }, [products]);
 
   const handleAddToCart = (product) => {
@@ -244,7 +246,7 @@ const HomePage = () => {
     navigate(`/category/${category._id}`);
   };
 
-  const activeCategories = categories.filter(c => c.isActive);
+  const activeCategories = (categories || []).filter(c => c.isActive);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">

@@ -12,13 +12,17 @@ const orderService = {
     if (params.status) queryParams.append('status', params.status);
     
     const response = await api.get(`${ORDERS_URL}?${queryParams.toString()}`);
-    return response.data;
+    const { data, pagination } = response.data;
+    return {
+      orders: data || [],
+      pagination: pagination || { page: 1, total: 0, totalPages: 0 }
+    };
   },
 
   // Get single order by ID
   getOrder: async (id) => {
     const response = await api.get(`${ORDERS_URL}/${id}`);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Create new order
@@ -56,7 +60,11 @@ const orderService = {
     if (params.endDate) queryParams.append('endDate', params.endDate);
     
     const response = await api.get(`${ORDERS_URL}/admin/all?${queryParams.toString()}`);
-    return response.data;
+    const { data, pagination } = response.data;
+    return {
+      orders: data || [],
+      pagination: pagination || { page: 1, total: 0, totalPages: 0 }
+    };
   },
 
   // Get order statistics (Admin)

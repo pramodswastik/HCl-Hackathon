@@ -212,7 +212,7 @@ const FilterSidebar = ({
                   />
                   <span className="text-sm text-gray-600">All Categories</span>
                 </label>
-                {categories.filter(c => c.isActive).map((category) => (
+                {(categories || []).filter(c => c.isActive).map((category) => (
                   <label key={category._id} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="radio"

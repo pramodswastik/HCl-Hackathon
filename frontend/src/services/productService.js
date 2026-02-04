@@ -17,13 +17,17 @@ const productService = {
     if (params.inStock !== undefined) queryParams.append('inStock', params.inStock);
     
     const response = await api.get(`${PRODUCTS_URL}?${queryParams.toString()}`);
-    return response.data;
+    const { data, page, pages, total, count } = response.data;
+    return {
+      products: data || [],
+      pagination: { page, pages, total, count }
+    };
   },
 
   // Get single product by ID
   getProduct: async (id) => {
     const response = await api.get(`${PRODUCTS_URL}/${id}`);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Search products with fuzzy search
@@ -38,7 +42,11 @@ const productService = {
     if (params.maxPrice) queryParams.append('maxPrice', params.maxPrice);
     
     const response = await api.get(`${PRODUCTS_URL}/search?${queryParams.toString()}`);
-    return response.data;
+    const { data, page, pages, total, count } = response.data;
+    return {
+      products: data || [],
+      pagination: { page, pages, total, count }
+    };
   },
 
   // Create product (Admin)
@@ -84,13 +92,17 @@ const productService = {
     if (params.order) queryParams.append('order', params.order);
     
     const response = await api.get(`${PRODUCTS_URL}?${queryParams.toString()}`);
-    return response.data;
+    const { data, page, pages, total, count } = response.data;
+    return {
+      products: data || [],
+      pagination: { page, pages, total, count }
+    };
   },
 
   // Get featured products
   getFeaturedProducts: async (limit = 8) => {
     const response = await api.get(`${PRODUCTS_URL}?featured=true&limit=${limit}`);
-    return response.data;
+    return response.data.data || [];
   },
 };
 

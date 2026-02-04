@@ -237,13 +237,14 @@ const OrdersPage = () => {
   const [reorderingId, setReorderingId] = useState(null);
 
   // Calculate order counts by status
+  const safeOrders = orders || [];
   const orderCounts = {
-    all: pagination.total || orders.length,
-    pending: orders.filter(o => o.status === 'pending').length,
-    processing: orders.filter(o => ['confirmed', 'processing'].includes(o.status)).length,
-    shipped: orders.filter(o => o.status === 'shipped').length,
-    delivered: orders.filter(o => o.status === 'delivered').length,
-    cancelled: orders.filter(o => ['cancelled', 'refunded'].includes(o.status)).length
+    all: pagination.total || safeOrders.length,
+    pending: safeOrders.filter(o => o.status === 'pending').length,
+    processing: safeOrders.filter(o => ['confirmed', 'processing'].includes(o.status)).length,
+    shipped: safeOrders.filter(o => o.status === 'shipped').length,
+    delivered: safeOrders.filter(o => o.status === 'delivered').length,
+    cancelled: safeOrders.filter(o => ['cancelled', 'refunded'].includes(o.status)).length
   };
 
   useEffect(() => {
