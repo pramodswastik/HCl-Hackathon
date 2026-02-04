@@ -10,6 +10,7 @@ const router = express.Router();
 const authRoutes = require('./authRoutes');
 const categoryRoutes = require('./categoryRoutes');
 const productRoutes = require('./productRoutes');
+const unifiedProductRoutes = require('./unifiedProductRoutes');
 const orderRoutes = require('./orderRoutes');
 const userRoutes = require('./userRoutes');
 
@@ -17,6 +18,7 @@ const userRoutes = require('./userRoutes');
 router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/products', productRoutes);
+router.use('/products', unifiedProductRoutes); // Unified product API
 router.use('/orders', orderRoutes);
 router.use('/users', userRoutes);
 
@@ -49,20 +51,21 @@ router.get('/', (req, res) => {
         deleteLogo: 'DELETE /api/categories/:id/logo (Admin)'
       },
       products: {
-        create: 'POST /api/products (Admin)',
-        list: 'GET /api/products',
-        get: 'GET /api/products/:id',
-        getBySlug: 'GET /api/products/slug/:slug',
-        getByCategory: 'GET /api/products/category/:categoryId',
-        search: 'GET /api/products/search?q=query',
-        featured: 'GET /api/products/featured',
-        update: 'PUT /api/products/:id (Admin)',
-        delete: 'DELETE /api/products/:id (Admin)',
-        deleteImage: 'DELETE /api/products/:id/images/:imageId (Admin)',
-        setPrimaryImage: 'PUT /api/products/:id/images/:imageId/primary (Admin)',
-        updateStock: 'PUT /api/products/:id/stock (Admin)',
-        stockHistory: 'GET /api/products/:id/stock/history (Admin)',
-        lowStock: 'GET /api/products/low-stock (Admin)'
+        unified: 'POST /api/products/unified - Consolidated API for all product operations',
+        create: 'POST /api/products (Admin) [Legacy]',
+        list: 'GET /api/products [Legacy]',
+        get: 'GET /api/products/:id [Legacy]',
+        getBySlug: 'GET /api/products/slug/:slug [Legacy]',
+        getByCategory: 'GET /api/products/category/:categoryId [Legacy]',
+        search: 'GET /api/products/search?q=query [Legacy]',
+        featured: 'GET /api/products/featured [Legacy]',
+        update: 'PUT /api/products/:id (Admin) [Legacy]',
+        delete: 'DELETE /api/products/:id (Admin) [Legacy]',
+        deleteImage: 'DELETE /api/products/:id/images/:imageId (Admin) [Legacy]',
+        setPrimaryImage: 'PUT /api/products/:id/images/:imageId/primary (Admin) [Legacy]',
+        updateStock: 'PUT /api/products/:id/stock (Admin) [Legacy]',
+        stockHistory: 'GET /api/products/:id/stock/history (Admin) [Legacy]',
+        lowStock: 'GET /api/products/low-stock (Admin) [Legacy]'
       },
       orders: {
         create: 'POST /api/orders',
