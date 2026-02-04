@@ -59,10 +59,10 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
 
             {/* Price per item */}
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="text-sm text-gray-600">${item.price?.toFixed(2)} each</span>
+              <span className="text-sm text-gray-600">₹{item.price?.toFixed(2)} each</span>
               {item.addOns && item.addOns.length > 0 && (
                 <span className="text-xs text-gray-400">
-                  (Base: ${item.basePrice?.toFixed(2)})
+                  (Base: ₹{item.basePrice?.toFixed(2)})
                 </span>
               )}
             </div>
@@ -100,7 +100,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
 
           {/* Subtotal */}
           <span className="font-bold text-red-600">
-            ${(item.price * item.quantity).toFixed(2)}
+            ₹{(item.price * item.quantity).toFixed(2)}
           </span>
         </div>
       </div>
@@ -117,12 +117,12 @@ const OrderSummary = ({ subtotal, tax, shipping, discount, total, onCheckout, is
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span className="text-gray-600">Subtotal</span>
-          <span className="font-medium">${subtotal.toFixed(2)}</span>
+          <span className="font-medium">₹{subtotal.toFixed(2)}</span>
         </div>
 
         <div className="flex justify-between">
           <span className="text-gray-600">Tax (8%)</span>
-          <span className="font-medium">${tax.toFixed(2)}</span>
+          <span className="font-medium">₹{tax.toFixed(2)}</span>
         </div>
 
         <div className="flex justify-between">
@@ -131,7 +131,7 @@ const OrderSummary = ({ subtotal, tax, shipping, discount, total, onCheckout, is
             {shipping === 0 ? (
               <span className="text-green-600">Free</span>
             ) : (
-              `$${shipping.toFixed(2)}`
+              `₹${shipping.toFixed(2)}`
             )}
           </span>
         </div>
@@ -139,14 +139,14 @@ const OrderSummary = ({ subtotal, tax, shipping, discount, total, onCheckout, is
         {discount > 0 && (
           <div className="flex justify-between text-green-600">
             <span>Discount</span>
-            <span>-${discount.toFixed(2)}</span>
+            <span>-₹{discount.toFixed(2)}</span>
           </div>
         )}
 
         <div className="border-t border-gray-200 pt-3 mt-3">
           <div className="flex justify-between text-lg font-bold">
             <span className="text-gray-800">Total</span>
-            <span className="text-red-600">${total.toFixed(2)}</span>
+            <span className="text-red-600">₹{total.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -156,7 +156,7 @@ const OrderSummary = ({ subtotal, tax, shipping, discount, total, onCheckout, is
         <div className="mt-4 p-3 bg-yellow-50 rounded-lg">
           <div className="flex items-center gap-2 text-yellow-800 text-sm mb-2">
             <TruckIcon className="h-4 w-4" />
-            <span>Add ${(25 - subtotal).toFixed(2)} more for free shipping!</span>
+            <span>Add ₹{(25 - subtotal).toFixed(2)} more for free shipping!</span>
           </div>
           <div className="w-full bg-yellow-200 rounded-full h-2">
             <div
@@ -403,7 +403,7 @@ const CartPage = () => {
               Ready to place your order?
             </h3>
             <p className="text-gray-500">
-              Your order total is <span className="font-bold text-red-600">${orderTotals.total.toFixed(2)}</span>
+              Your order total is <span className="font-bold text-red-600">₹{orderTotals.total.toFixed(2)}</span>
             </p>
           </div>
 
@@ -413,7 +413,7 @@ const CartPage = () => {
               {items.slice(0, 3).map((item) => (
                 <div key={item.cartItemId} className="flex justify-between">
                   <span className="text-gray-600">{item.name} × {item.quantity}</span>
-                  <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="font-medium">₹{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
               {items.length > 3 && (

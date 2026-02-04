@@ -66,10 +66,10 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
           </div>
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-red-600">${product.price?.toFixed(2)}</span>
+              <span className="text-xl font-bold text-red-600">₹{product.price?.toFixed(2)}</span>
               {product.compareAtPrice && product.compareAtPrice > product.price && (
                 <span className="text-sm text-gray-400 line-through">
-                  ${product.compareAtPrice.toFixed(2)}
+                  ₹{product.compareAtPrice.toFixed(2)}
                 </span>
               )}
             </div>
@@ -127,10 +127,10 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
         )}
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-red-600">${product.price?.toFixed(2)}</span>
+            <span className="text-lg font-bold text-red-600">₹{product.price?.toFixed(2)}</span>
             {product.compareAtPrice && product.compareAtPrice > product.price && (
               <span className="text-sm text-gray-400 line-through">
-                ${product.compareAtPrice.toFixed(2)}
+                ₹{product.compareAtPrice.toFixed(2)}
               </span>
             )}
           </div>
@@ -487,6 +487,75 @@ const ProductsPage = () => {
       <div className="flex gap-6">
         {/* Sidebar Filters */}
         <aside className="hidden lg:block w-72 flex-shrink-0">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                <FunnelIcon className="h-5 w-5" />
+                Filters
+              </h3>
+              <button 
+                onClick={handleClearFilters}
+                className="text-sm text-red-600 hover:text-red-700"
+              >
+                Clear All
+              </button>
+            </div>
+
+            {/* Category Filter */}
+            <div className="mb-6">
+              <h4 className="font-medium text-gray-700 mb-3">Categories</h4>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="category-desktop"
+                    checked={!categoryId}
+                    onChange={() => handleCategoryChange('')}
+                    className="text-red-600 focus:ring-red-500"
+                  />
+                  <span className="text-sm text-gray-600">All Categories</span>
+                </label>
+                {(categories || []).filter(c => c.isActive).map((category) => (
+                  <label key={category._id} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="category-desktop"
+                      checked={categoryId === category._id}
+                      onChange={() => handleCategoryChange(category._id)}
+                      className="text-red-600 focus:ring-red-500"
+                    />
+                    <span className="text-sm text-gray-600">{category.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Range Filter */}
+            <div>
+              <h4 className="font-medium text-gray-700 mb-3">Price Range</h4>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={priceRange.min}
+                  onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                />
+                <span className="text-gray-400">-</span>
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={priceRange.max}
+                  onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                />
+              </div>
+            </div>
+          </Card>
+        </aside>
+
+        {/* Mobile Filter Sidebar */}
+        {showFilters && (
           <FilterSidebar
             categories={categories}
             selectedCategory={categoryId}
@@ -497,19 +566,7 @@ const ProductsPage = () => {
             isOpen={showFilters}
             onClose={() => setShowFilters(false)}
           />
-        </aside>
-
-        {/* Mobile Filter Sidebar */}
-        <FilterSidebar
-          categories={categories}
-          selectedCategory={categoryId}
-          onCategoryChange={handleCategoryChange}
-          priceRange={priceRange}
-          onPriceChange={setPriceRange}
-          onClearFilters={handleClearFilters}
-          isOpen={showFilters}
-          onClose={() => setShowFilters(false)}
-        />
+        )}
 
         {/* Products Grid/List */}
         <main className="flex-1">

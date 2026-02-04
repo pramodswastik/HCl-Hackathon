@@ -176,7 +176,7 @@ const AddOnSelector = ({ addOns = [], selectedAddOns, onAddOnToggle }) => {
                 </div>
                 <span className="font-medium text-gray-700">{addon.name}</span>
               </div>
-              <span className="text-red-600 font-semibold">+${addon.price?.toFixed(2)}</span>
+              <span className="text-red-600 font-semibold">+₹{addon.price?.toFixed(2)}</span>
             </button>
           );
         })}
@@ -362,12 +362,12 @@ const ProductDetailPage = () => {
           {/* Price */}
           <div className="flex items-baseline gap-3">
             <span className="text-3xl font-bold text-red-600">
-              ${product.price?.toFixed(2)}
+              ₹{product.price?.toFixed(2)}
             </span>
             {product.compareAtPrice && product.compareAtPrice > product.price && (
               <>
                 <span className="text-xl text-gray-400 line-through">
-                  ${product.compareAtPrice.toFixed(2)}
+                  ₹{product.compareAtPrice.toFixed(2)}
                 </span>
                 <span className="bg-green-100 text-green-700 text-sm font-medium px-2 py-1 rounded">
                   Save {Math.round((1 - product.price / product.compareAtPrice) * 100)}%
@@ -426,7 +426,7 @@ const ProductDetailPage = () => {
               <div className="flex-1 sm:text-right">
                 <p className="text-sm text-gray-500 mb-1">Total Price</p>
                 <p className="text-2xl font-bold text-red-600">
-                  ${calculateTotalPrice().toFixed(2)}
+                  ₹{calculateTotalPrice().toFixed(2)}
                 </p>
               </div>
             </div>

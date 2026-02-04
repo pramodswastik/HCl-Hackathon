@@ -121,7 +121,7 @@ const OrderCard = ({ order, onReorder, isReordering }) => {
                 </span>
                 <span className="text-gray-700 truncate">{item.name}</span>
               </div>
-              <span className="text-gray-600 flex-shrink-0">${item.subtotal?.toFixed(2)}</span>
+              <span className="text-gray-600 flex-shrink-0">₹{item.subtotal?.toFixed(2)}</span>
             </div>
           ))}
           {remainingCount > 0 && (
@@ -135,7 +135,7 @@ const OrderCard = ({ order, onReorder, isReordering }) => {
         <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
           <span className="text-gray-600">Total</span>
           <span className="text-lg font-bold text-red-600">
-            ${order.pricing?.total?.toFixed(2) || '0.00'}
+            ₹{order.pricing?.total?.toFixed(2) || '0.00'}
           </span>
         </div>
       </div>

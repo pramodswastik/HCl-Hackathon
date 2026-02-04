@@ -73,10 +73,10 @@ const SearchProductCard = ({ product, onAddToCart }) => {
         </div>
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-baseline gap-2">
-            <span className="text-lg font-bold text-red-600">${product.price?.toFixed(2)}</span>
+            <span className="text-lg font-bold text-red-600">₹{product.price?.toFixed(2)}</span>
             {product.compareAtPrice && product.compareAtPrice > product.price && (
               <span className="text-xs text-gray-400 line-through">
-                ${product.compareAtPrice.toFixed(2)}
+                ₹{product.compareAtPrice.toFixed(2)}
               </span>
             )}
           </div>

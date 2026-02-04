@@ -134,10 +134,10 @@ const OrderItem = ({ item }) => {
               </p>
             )}
           </div>
-          <span className="font-semibold text-gray-800">${item.subtotal?.toFixed(2)}</span>
+          <span className="font-semibold text-gray-800">₹{item.subtotal?.toFixed(2)}</span>
         </div>
         <div className="mt-1 flex items-center text-sm text-gray-500">
-          <span>${item.price?.toFixed(2)} × {item.quantity}</span>
+          <span>₹{item.price?.toFixed(2)} × {item.quantity}</span>
         </div>
       </div>
     </div>
@@ -306,11 +306,11 @@ const OrderDetailPage = () => {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${order.pricing?.subtotal?.toFixed(2)}</span>
+                <span className="font-medium">₹{order.pricing?.subtotal?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Tax ({((order.pricing?.taxRate || 0) * 100).toFixed(0)}%)</span>
-                <span className="font-medium">${order.pricing?.tax?.toFixed(2)}</span>
+                <span className="font-medium">₹{order.pricing?.tax?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
@@ -318,20 +318,20 @@ const OrderDetailPage = () => {
                   {order.pricing?.shipping === 0 ? (
                     <span className="text-green-600">Free</span>
                   ) : (
-                    `$${order.pricing?.shipping?.toFixed(2)}`
+                    `₹${order.pricing?.shipping?.toFixed(2)}`
                   )}
                 </span>
               </div>
               {order.pricing?.discount > 0 && (
                 <div className="flex justify-between text-green-600">
                   <span>Discount</span>
-                  <span>-${order.pricing?.discount?.toFixed(2)}</span>
+                  <span>-₹{order.pricing?.discount?.toFixed(2)}</span>
                 </div>
               )}
               <div className="border-t border-gray-200 pt-3 mt-3">
                 <div className="flex justify-between text-lg font-bold">
                   <span className="text-gray-800">Total</span>
-                  <span className="text-red-600">${order.pricing?.total?.toFixed(2)}</span>
+                  <span className="text-red-600">₹{order.pricing?.total?.toFixed(2)}</span>
                 </div>
               </div>
             </div>
