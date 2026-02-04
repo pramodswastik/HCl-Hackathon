@@ -9,10 +9,12 @@ const router = express.Router();
 // Import route modules
 const authRoutes = require('./authRoutes');
 const categoryRoutes = require('./categoryRoutes');
+const productRoutes = require('./productRoutes');
 
 // Mount routes
 router.use('/auth', authRoutes);
 router.use('/categories', categoryRoutes);
+router.use('/products', productRoutes);
 
 // API Info
 router.get('/', (req, res) => {
@@ -41,6 +43,22 @@ router.get('/', (req, res) => {
         update: 'PUT /api/categories/:id (Admin)',
         delete: 'DELETE /api/categories/:id (Admin)',
         deleteLogo: 'DELETE /api/categories/:id/logo (Admin)'
+      },
+      products: {
+        create: 'POST /api/products (Admin)',
+        list: 'GET /api/products',
+        get: 'GET /api/products/:id',
+        getBySlug: 'GET /api/products/slug/:slug',
+        getByCategory: 'GET /api/products/category/:categoryId',
+        search: 'GET /api/products/search?q=query',
+        featured: 'GET /api/products/featured',
+        update: 'PUT /api/products/:id (Admin)',
+        delete: 'DELETE /api/products/:id (Admin)',
+        deleteImage: 'DELETE /api/products/:id/images/:imageId (Admin)',
+        setPrimaryImage: 'PUT /api/products/:id/images/:imageId/primary (Admin)',
+        updateStock: 'PUT /api/products/:id/stock (Admin)',
+        stockHistory: 'GET /api/products/:id/stock/history (Admin)',
+        lowStock: 'GET /api/products/low-stock (Admin)'
       }
     }
   });

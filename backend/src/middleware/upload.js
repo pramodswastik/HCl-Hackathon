@@ -54,9 +54,24 @@ const uploadCategoryLogo = multer({
 }).single('logo');
 
 /**
+ * Upload middleware for product images (multiple)
+ * Allows up to 10 images per product
+ */
+const MAX_PRODUCT_IMAGES = 10;
+
+const uploadProductImagesMulter = multer({
+  storage: memoryStorage,
+  limits: {
+    fileSize: MAX_FILE_SIZE,
+    files: MAX_PRODUCT_IMAGES
+  },
+  fileFilter: imageFileFilter
+}).array('images', MAX_PRODUCT_IMAGES);
+
+/**
  * Wrapper to handle multer errors
  */
-const handleUpload = (uploadMiddleware) => {
+const handleUpload = (uploadMiddleware, maxFiles = 1) => {
   return (req, res, next) => {
     uploadMiddleware(req, res, (err) => {
       if (err) {
@@ -70,7 +85,13 @@ const handleUpload = (uploadMiddleware) => {
           if (err.code === 'LIMIT_FILE_COUNT') {
             return res.status(400).json({
               success: false,
-              message: 'Too many files. Only one file allowed'
+              message: `Too many files. Maximum ${maxFiles} file(s) allowed`
+            });
+          }
+          if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+            return res.status(400).json({
+              success: false,
+              message: 'Unexpected field name for file upload'
             });
           }
           return res.status(400).json({
@@ -94,7 +115,9 @@ const handleUpload = (uploadMiddleware) => {
 };
 
 module.exports = {
-  uploadCategoryLogo: handleUpload(uploadCategoryLogo),
+  uploadCategoryLogo: handleUpload(uploadCategoryLogo, 1),
+  uploadProductImages: handleUpload(uploadProductImagesMulter, MAX_PRODUCT_IMAGES),
   ALLOWED_IMAGE_TYPES,
-  MAX_FILE_SIZE
+  MAX_FILE_SIZE,
+  MAX_PRODUCT_IMAGES
 };

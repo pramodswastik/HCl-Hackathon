@@ -162,6 +162,27 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    stockHistory: [
+      {
+        previousQuantity: Number,
+        newQuantity: Number,
+        change: Number,
+        operation: {
+          type: String,
+          enum: ['set', 'add', 'subtract'],
+          default: 'set'
+        },
+        reason: String,
+        changedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User'
+        },
+        changedAt: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
