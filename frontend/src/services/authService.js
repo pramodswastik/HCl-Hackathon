@@ -2,31 +2,62 @@ import api from './api';
 
 const AUTH_URL = '/auth';
 
+// Helper to get the appropriate storage based on rememberMe preference
+const getStorage = (rememberMe) => {
+  return rememberMe ? localStorage : sessionStorage;
+};
+
+// Helper to clear all auth data from both storages
+const clearAllAuthData = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('user');
+};
+
+// Helper to store auth data
+const storeAuthData = (token, user, rememberMe) => {
+  const storage = getStorage(rememberMe);
+  // Clear the other storage first
+  if (rememberMe) {
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+  } else {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+  storage.setItem('token', token);
+  storage.setItem('user', JSON.stringify(user));
+};
+
 const authService = {
   // Register a new user
-  register: async (userData) => {
+  register: async (userData, rememberMe = true) => {
     const response = await api.post(`${AUTH_URL}/register`, userData);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    if (response.data.data?.accessToken) {
+      const token = response.data.data.accessToken;
+      const user = response.data.data.user;
+      storeAuthData(token, user, rememberMe);
+      return { token, user };
     }
     return response.data;
   },
 
   // Login user
-  login: async (credentials) => {
+  login: async (credentials, rememberMe = false) => {
     const response = await api.post(`${AUTH_URL}/login`, credentials);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    if (response.data.data?.accessToken) {
+      const token = response.data.data.accessToken;
+      const user = response.data.data.user;
+      storeAuthData(token, user, rememberMe);
+      return { token, user };
     }
     return response.data;
   },
 
   // Logout user
   logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAllAuthData();
     // Optionally call backend logout endpoint
     api.post(`${AUTH_URL}/logout`).catch(() => {});
   },
@@ -34,14 +65,20 @@ const authService = {
   // Get current user profile
   getProfile: async () => {
     const response = await api.get(`${AUTH_URL}/profile`);
-    return response.data;
+    return response.data.data || response.data;
   },
 
   // Update user profile
   updateProfile: async (profileData) => {
     const response = await api.put(`${AUTH_URL}/profile`, profileData);
-    if (response.data.user) {
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+    if (response.data.data?.user || response.data.user) {
+      const user = response.data.data?.user || response.data.user;
+      // Update in whichever storage has the token
+      if (localStorage.getItem('token')) {
+        localStorage.setItem('user', JSON.stringify(user));
+      } else if (sessionStorage.getItem('token')) {
+        sessionStorage.setItem('user', JSON.stringify(user));
+      }
     }
     return response.data;
   },
@@ -64,20 +101,33 @@ const authService = {
     return response.data;
   },
 
+  // Refresh token
+  refreshToken: async (rememberMe = false) => {
+    const response = await api.post(`${AUTH_URL}/refresh-token`);
+    if (response.data.data?.accessToken) {
+      const token = response.data.data.accessToken;
+      storeAuthData(token, authService.getStoredUser(), rememberMe);
+      return { token };
+    }
+    return response.data;
+  },
+
   // Check if user is authenticated
   isAuthenticated: () => {
-    return !!localStorage.getItem('token');
+    return !!(localStorage.getItem('token') || sessionStorage.getItem('token'));
   },
 
   // Get stored user
   getStoredUser: () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    const localUser = localStorage.getItem('user');
+    const sessionUser = sessionStorage.getItem('user');
+    const userStr = localUser || sessionUser;
+    return userStr ? JSON.parse(userStr) : null;
   },
 
   // Get stored token
   getToken: () => {
-    return localStorage.getItem('token');
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
   },
 };
 

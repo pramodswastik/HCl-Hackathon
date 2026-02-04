@@ -153,26 +153,26 @@
 - [x] Implement breadcrumb navigation
 
 ### 3.4 Authentication Pages
-- [ ] **Sign Up Page**
-  - [ ] Create registration form
-  - [ ] Add form validation
-  - [ ] Handle API integration
-  - [ ] Show success/error messages
-  - [ ] Redirect after registration
+- [x] **Sign Up Page**
+  - [x] Create registration form
+  - [x] Add form validation
+  - [x] Handle API integration
+  - [x] Show success/error messages
+  - [x] Redirect after registration
 
-- [ ] **Login Page**
-  - [ ] Create login form
-  - [ ] Add form validation
-  - [ ] Handle JWT storage
-  - [ ] Implement "remember me"
-  - [ ] Password visibility toggle
+- [x] **Login Page**
+  - [x] Create login form
+  - [x] Add form validation
+  - [x] Handle JWT storage
+  - [x] Implement "remember me"
+  - [x] Password visibility toggle
 
-- [ ] **Auth State Management**
-  - [ ] Store user session
-  - [ ] Implement auth context/store
-  - [ ] Create protected route wrapper
-  - [ ] Handle token refresh
-  - [ ] Implement logout functionality
+- [x] **Auth State Management**
+  - [x] Store user session
+  - [x] Implement auth context/store
+  - [x] Create protected route wrapper
+  - [x] Handle token refresh
+  - [x] Implement logout functionality
 
 ### 3.5 Customer-Facing Pages
 - [ ] **Home Page (McDonald's Style)**

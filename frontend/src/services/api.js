@@ -1,6 +1,26 @@
 import axios from 'axios';
 import env from '@/config/env';
 
+// Helper to get token from either storage
+const getToken = () => {
+  return localStorage.getItem('token') || sessionStorage.getItem('token');
+};
+
+// Helper to determine which storage is being used
+const getActiveStorage = () => {
+  if (localStorage.getItem('token')) return localStorage;
+  if (sessionStorage.getItem('token')) return sessionStorage;
+  return localStorage; // default
+};
+
+// Helper to clear auth from both storages
+const clearAuth = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('user');
+};
+
 // Create axios instance with default config
 const api = axios.create({
   baseURL: env.API_BASE_URL,
@@ -14,7 +34,7 @@ const api = axios.create({
 // Request interceptor - add auth token to requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -40,21 +60,25 @@ api.interceptors.response.use(
       try {
         // Attempt to refresh token
         const response = await axios.post(
-          `${env.API_BASE_URL}/auth/refresh`,
+          `${env.API_BASE_URL}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );
 
-        const { token } = response.data;
-        localStorage.setItem('token', token);
+        const newToken = response.data.data?.accessToken || response.data.token;
+        
+        if (newToken) {
+          // Store in the same storage that was being used
+          const storage = getActiveStorage();
+          storage.setItem('token', newToken);
 
-        // Retry original request with new token
-        originalRequest.headers.Authorization = `Bearer ${token}`;
-        return api(originalRequest);
+          // Retry original request with new token
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return api(originalRequest);
+        }
       } catch (refreshError) {
         // Refresh failed - logout user
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearAuth();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }

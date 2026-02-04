@@ -1,21 +1,54 @@
+import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { getProfile, logout } from '@/store/slices/authSlice';
+import { Spinner } from '@/components/ui';
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+const ProtectedRoute = ({ children, requireEmailVerification = false }) => {
+  const { isAuthenticated, user, isLoading, token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const location = useLocation();
 
+  // Validate token and fetch user profile on mount if authenticated but no user data
+  useEffect(() => {
+    if (isAuthenticated && token && !user) {
+      dispatch(getProfile()).unwrap().catch(() => {
+        // If profile fetch fails, token is likely invalid
+        dispatch(logout());
+      });
+    }
+  }, [isAuthenticated, token, user, dispatch]);
+
+  // Show loading state while checking auth
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <Spinner size="lg" />
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    // Redirect to login with return url
+  // Not authenticated - redirect to login
+  if (!isAuthenticated || !token) {
+    // Save the attempted URL for redirecting after login
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Optional: Check if email verification is required
+  if (requireEmailVerification && user && !user.isEmailVerified) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md text-center">
+          <h2 className="text-lg font-semibold text-yellow-800 mb-2">
+            Email Verification Required
+          </h2>
+          <p className="text-yellow-700">
+            Please verify your email address to access this page. 
+            Check your inbox for the verification link.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return children;

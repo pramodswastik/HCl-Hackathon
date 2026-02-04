@@ -1,14 +1,40 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authService from '@services/authService';
 
-// Get user from localStorage
-const user = JSON.parse(localStorage.getItem('user'));
-const token = localStorage.getItem('token');
+// Get user from storage (check both localStorage and sessionStorage)
+const getStoredAuth = () => {
+  const localUser = localStorage.getItem('user');
+  const localToken = localStorage.getItem('token');
+  const sessionUser = sessionStorage.getItem('user');
+  const sessionToken = sessionStorage.getItem('token');
+  
+  // Prefer localStorage (remember me enabled) over sessionStorage
+  if (localToken && localUser) {
+    return {
+      user: JSON.parse(localUser),
+      token: localToken,
+      rememberMe: true,
+    };
+  }
+  
+  if (sessionToken && sessionUser) {
+    return {
+      user: JSON.parse(sessionUser),
+      token: sessionToken,
+      rememberMe: false,
+    };
+  }
+  
+  return { user: null, token: null, rememberMe: false };
+};
+
+const storedAuth = getStoredAuth();
 
 const initialState = {
-  user: user || null,
-  token: token || null,
-  isAuthenticated: !!token,
+  user: storedAuth.user,
+  token: storedAuth.token,
+  rememberMe: storedAuth.rememberMe,
+  isAuthenticated: !!storedAuth.token,
   isLoading: false,
   error: null,
 };
@@ -18,7 +44,8 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData, thunkAPI) => {
     try {
-      return await authService.register(userData);
+      // Default to remember me for registration
+      return await authService.register(userData, true);
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
@@ -31,7 +58,9 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials, thunkAPI) => {
     try {
-      return await authService.login(credentials);
+      const { rememberMe = false, ...loginData } = credentials;
+      const response = await authService.login(loginData, rememberMe);
+      return { ...response, rememberMe };
     } catch (error) {
       const message = error.response?.data?.message || error.message;
       return thunkAPI.rejectWithValue(message);
@@ -57,6 +86,21 @@ export const getProfile = createAsyncThunk(
   }
 );
 
+// Refresh token
+export const refreshAuthToken = createAsyncThunk(
+  'auth/refreshToken',
+  async (_, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState();
+      const rememberMe = state.auth.rememberMe;
+      return await authService.refreshToken(rememberMe);
+    } catch (error) {
+      const message = error.response?.data?.message || error.message;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -67,6 +111,11 @@ const authSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    setCredentials: (state, action) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.isAuthenticated = true;
     },
   },
   extraReducers: (builder) => {
@@ -81,6 +130,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
+        state.rememberMe = true;
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
@@ -96,6 +146,7 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
+        state.rememberMe = action.payload.rememberMe;
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
@@ -106,6 +157,7 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         state.isAuthenticated = false;
+        state.rememberMe = false;
       })
       // Get Profile
       .addCase(getProfile.pending, (state) => {
@@ -118,9 +170,19 @@ const authSlice = createSlice({
       .addCase(getProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      // Refresh Token
+      .addCase(refreshAuthToken.fulfilled, (state, action) => {
+        state.token = action.payload.token;
+      })
+      .addCase(refreshAuthToken.rejected, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.rememberMe = false;
       });
   },
 });
 
-export const { reset, clearError } = authSlice.actions;
+export const { reset, clearError, setCredentials } = authSlice.actions;
 export default authSlice.reducer;
