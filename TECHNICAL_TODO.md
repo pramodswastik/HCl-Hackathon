@@ -63,17 +63,17 @@
   - [x] Implement permission validation
 
 ### 2.4 Category Management API
-- [ ] **CRUD Operations**
-  - [ ] `POST /categories` - Create category (Admin)
-  - [ ] `GET /categories` - List all categories
-  - [ ] `GET /categories/:id` - Get category details
-  - [ ] `PUT /categories/:id` - Update category (Admin)
-  - [ ] `DELETE /categories/:id` - Delete category (Admin)
+- [x] **CRUD Operations**
+  - [x] `POST /categories` - Create category (Admin)
+  - [x] `GET /categories` - List all categories
+  - [x] `GET /categories/:id` - Get category details
+  - [x] `PUT /categories/:id` - Update category (Admin)
+  - [x] `DELETE /categories/:id` - Delete category (Admin)
 
-- [ ] **Category Features**
-  - [ ] Implement logo upload to cloud storage
-  - [ ] Add category hierarchy support
-  - [ ] Create category validation schema
+- [x] **Category Features**
+  - [x] Implement logo upload to cloud storage
+  - [x] Add category hierarchy support
+  - [x] Create category validation schema
 
 ### 2.5 Product Management API
 - [ ] **CRUD Operations**

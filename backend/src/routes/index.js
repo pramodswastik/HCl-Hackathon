@@ -8,9 +8,11 @@ const router = express.Router();
 
 // Import route modules
 const authRoutes = require('./authRoutes');
+const categoryRoutes = require('./categoryRoutes');
 
 // Mount routes
 router.use('/auth', authRoutes);
+router.use('/categories', categoryRoutes);
 
 // API Info
 router.get('/', (req, res) => {
@@ -30,6 +32,15 @@ router.get('/', (req, res) => {
         getProfile: 'GET /api/auth/me',
         updateProfile: 'PUT /api/auth/me',
         changePassword: 'PUT /api/auth/change-password'
+      },
+      categories: {
+        create: 'POST /api/categories (Admin)',
+        list: 'GET /api/categories',
+        get: 'GET /api/categories/:id',
+        getHierarchy: 'GET /api/categories/:id/hierarchy',
+        update: 'PUT /api/categories/:id (Admin)',
+        delete: 'DELETE /api/categories/:id (Admin)',
+        deleteLogo: 'DELETE /api/categories/:id/logo (Admin)'
       }
     }
   });
