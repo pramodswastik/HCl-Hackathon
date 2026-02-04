@@ -177,8 +177,8 @@ orderSchema.index({ status: 1 });
 orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ createdAt: -1 });
 
-// Generate order number before saving
-orderSchema.pre('save', async function (next) {
+// Generate order number before validation
+orderSchema.pre('validate', function () {
   if (!this.orderNumber) {
     const date = new Date();
     const year = date.getFullYear().toString().slice(-2);
@@ -187,18 +187,16 @@ orderSchema.pre('save', async function (next) {
     const random = Math.random().toString(36).substring(2, 8).toUpperCase();
     this.orderNumber = `ORD-${year}${month}${day}-${random}`;
   }
-  next();
 });
 
 // Add status to history when status changes
-orderSchema.pre('save', function (next) {
+orderSchema.pre('save', function () {
   if (this.isModified('status')) {
     this.statusHistory.push({
       status: this.status,
       timestamp: new Date()
     });
   }
-  next();
 });
 
 // Virtual for item count

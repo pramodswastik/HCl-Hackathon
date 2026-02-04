@@ -186,7 +186,7 @@ productSchema.index({ isFeatured: 1 });
 productSchema.index({ createdAt: -1 });
 
 // Generate slug and SKU before saving
-productSchema.pre('save', async function (next) {
+productSchema.pre('save', async function () {
   if (this.isModified('name')) {
     this.slug = slugify(this.name, { lower: true, strict: true });
     
@@ -207,8 +207,6 @@ productSchema.pre('save', async function (next) {
     const timestamp = Date.now().toString().slice(-6);
     this.sku = `${prefix}-${timestamp}`;
   }
-  
-  next();
 });
 
 // Virtual for checking low stock

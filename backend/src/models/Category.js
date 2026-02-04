@@ -68,11 +68,10 @@ categorySchema.index({ isActive: 1 });
 categorySchema.index({ displayOrder: 1 });
 
 // Generate slug before saving
-categorySchema.pre('save', function (next) {
+categorySchema.pre('save', function () {
   if (this.isModified('name')) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
-  next();
 });
 
 // Virtual for subcategories
@@ -96,7 +95,7 @@ categorySchema.statics.getCategoryTree = async function () {
 };
 
 // Build ancestors array when parent changes
-categorySchema.pre('save', async function (next) {
+categorySchema.pre('save', async function () {
   if (this.isModified('parent') && this.parent) {
     const parent = await this.constructor.findById(this.parent);
     if (parent) {
@@ -108,7 +107,6 @@ categorySchema.pre('save', async function (next) {
   } else if (!this.parent) {
     this.ancestors = [];
   }
-  next();
 });
 
 const Category = mongoose.model('Category', categorySchema);

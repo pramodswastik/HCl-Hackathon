@@ -2,9 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const connectDB = require('./config/database');
+const routes = require('./routes');
 
 const app = express();
 
@@ -60,6 +62,7 @@ app.use(limiter);
 
 app.use(express.json({ limit: '10kb' })); // Limit body size to prevent DOS attacks
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser()); // Parse cookies for refresh token
 
 // ======================
 // Request Logging (Development)
@@ -94,6 +97,9 @@ app.get('/api', (req, res) => {
     version: '1.0.0'
   });
 });
+
+// Mount all API routes
+app.use('/api', routes);
 
 // ======================
 // 404 Handler
