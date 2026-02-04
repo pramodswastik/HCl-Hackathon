@@ -18,9 +18,10 @@ const categoryService = {
   // Create category (Admin)
   createCategory: async (categoryData) => {
     const response = await api.post(CATEGORIES_URL, categoryData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      transformRequest: [(data, headers) => {
+        delete headers['Content-Type'];
+        return data;
+      }],
     });
     return response.data.data || response.data;
   },
@@ -28,9 +29,10 @@ const categoryService = {
   // Update category (Admin)
   updateCategory: async (id, categoryData) => {
     const response = await api.put(`${CATEGORIES_URL}/${id}`, categoryData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      transformRequest: [(data, headers) => {
+        delete headers['Content-Type'];
+        return data;
+      }],
     });
     return response.data.data || response.data;
   },

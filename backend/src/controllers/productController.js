@@ -67,6 +67,8 @@ const createProduct = asyncHandler(async (req, res) => {
 
   // Handle image uploads to S3
   const images = [];
+  console.log('[Product] Files received:', req.files?.length || 0, req.files?.map(f => ({ name: f.originalname, size: f.size, mimetype: f.mimetype })));
+  
   if (req.files && req.files.length > 0) {
     for (let i = 0; i < req.files.length; i++) {
       const file = req.files[i];

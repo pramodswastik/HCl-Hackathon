@@ -52,9 +52,11 @@ const productService = {
   // Create product (Admin)
   createProduct: async (productData) => {
     const response = await api.post(PRODUCTS_URL, productData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      transformRequest: [(data, headers) => {
+        // Remove Content-Type so browser sets it with boundary for FormData
+        delete headers['Content-Type'];
+        return data;
+      }],
     });
     return response.data;
   },
@@ -62,9 +64,11 @@ const productService = {
   // Update product (Admin)
   updateProduct: async (id, productData) => {
     const response = await api.put(`${PRODUCTS_URL}/${id}`, productData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      transformRequest: [(data, headers) => {
+        // Remove Content-Type so browser sets it with boundary for FormData
+        delete headers['Content-Type'];
+        return data;
+      }],
     });
     return response.data;
   },

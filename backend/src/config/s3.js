@@ -24,23 +24,33 @@ const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || 'retail-portal-uploads';
  * @returns {Promise<{url: string, key: string}>}
  */
 const uploadToS3 = async (fileBuffer, key, contentType) => {
-  const upload = new Upload({
-    client: s3Client,
-    params: {
-      Bucket: BUCKET_NAME,
-      Key: key,
-      Body: fileBuffer,
-      ContentType: contentType,
-      ACL: 'public-read'
-    }
-  });
-
-  const result = await upload.done();
+  console.log('[S3] Starting upload:', { key, contentType, bufferSize: fileBuffer?.length });
   
-  return {
-    url: result.Location || `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${key}`,
-    key: key
-  };
+  try {
+    const upload = new Upload({
+      client: s3Client,
+      params: {
+        Bucket: BUCKET_NAME,
+        Key: key,
+        Body: fileBuffer,
+        ContentType: contentType
+        // Note: ACL removed - bucket uses bucket policy for public access instead of ACLs
+      }
+    });
+
+    const result = await upload.done();
+    
+    const url = result.Location || `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${key}`;
+    console.log('[S3] Upload successful:', { url, key });
+    
+    return {
+      url,
+      key: key
+    };
+  } catch (error) {
+    console.error('[S3] Upload failed:', error.message, error.Code);
+    throw error;
+  }
 };
 
 /**
