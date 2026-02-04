@@ -288,6 +288,142 @@ const orderStatsSchema = Joi.object({
 });
 
 /**
+ * Schema for consolidated order management
+ */
+const manageOrderSchema = Joi.object({
+  operation: Joi.string()
+    .valid('create', 'list', 'get', 'updateStatus', 'reorder', 'getStats', 'getHistory', 'getAllOrders')
+    .required()
+    .messages({
+      'any.only': 'Invalid operation. Valid operations: create, list, get, updateStatus, reorder, getStats, getHistory, getAllOrders',
+      'any.required': 'Operation is required'
+    }),
+  
+  // Fields for 'create' operation
+  items: Joi.when('operation', {
+    is: 'create',
+    then: Joi.array()
+      .items(orderItemSchema)
+      .min(1)
+      .required()
+      .messages({
+        'array.min': 'At least one item is required',
+        'any.required': 'Order items are required'
+      }),
+    otherwise: Joi.forbidden()
+  }),
+  shippingAddress: Joi.when('operation', {
+    is: 'create',
+    then: addressSchema.required(),
+    otherwise: Joi.forbidden()
+  }),
+  billingAddress: Joi.when('operation', {
+    is: 'create',
+    then: addressSchema.optional(),
+    otherwise: Joi.forbidden()
+  }),
+  paymentMethod: Joi.when('operation', {
+    is: 'create',
+    then: Joi.string()
+      .valid('credit_card', 'debit_card', 'paypal', 'stripe', 'cash_on_delivery')
+      .required()
+      .messages({
+        'any.only': 'Invalid payment method',
+        'any.required': 'Payment method is required'
+      }),
+    otherwise: Joi.forbidden()
+  }),
+  shippingCost: Joi.when('operation', {
+    is: 'create',
+    then: Joi.number().min(0).optional().default(0),
+    otherwise: Joi.forbidden()
+  }),
+  coupon: Joi.when('operation', {
+    is: 'create',
+    then: couponSchema.optional(),
+    otherwise: Joi.forbidden()
+  }),
+  notes: Joi.when('operation', {
+    is: 'create',
+    then: Joi.string().trim().max(1000).optional(),
+    otherwise: Joi.forbidden()
+  }),
+
+  // Fields for 'list' and 'getAllOrders' operations
+  page: Joi.when('operation', {
+    is: Joi.valid('list', 'getAllOrders'),
+    then: Joi.number().integer().min(1).optional().default(1),
+    otherwise: Joi.forbidden()
+  }),
+  limit: Joi.when('operation', {
+    is: Joi.valid('list', 'getAllOrders'),
+    then: Joi.number().integer().min(1).max(100).optional().default(10),
+    otherwise: Joi.forbidden()
+  }),
+  status: Joi.when('operation', {
+    is: Joi.valid('list', 'getAllOrders'),
+    then: Joi.string()
+      .valid('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded')
+      .optional(),
+    otherwise: Joi.forbidden()
+  }),
+  paymentStatus: Joi.when('operation', {
+    is: 'list',
+    then: Joi.string()
+      .valid('pending', 'completed', 'failed', 'refunded')
+      .optional(),
+    otherwise: Joi.forbidden()
+  }),
+  sortBy: Joi.when('operation', {
+    is: Joi.valid('list', 'getAllOrders'),
+    then: Joi.string().optional().default('createdAt'),
+    otherwise: Joi.forbidden()
+  }),
+  sortOrder: Joi.when('operation', {
+    is: Joi.valid('list', 'getAllOrders'),
+    then: Joi.string().valid('asc', 'desc').optional().default('desc'),
+    otherwise: Joi.forbidden()
+  }),
+
+  // Fields for 'get', 'updateStatus', and 'reorder' operations
+  orderId: Joi.when('operation', {
+    is: Joi.valid('get', 'updateStatus', 'reorder'),
+    then: Joi.string()
+      .custom(objectIdValidator, 'ObjectId validation')
+      .required()
+      .messages({
+        'any.invalid': 'Invalid order ID',
+        'any.required': 'Order ID is required'
+      }),
+    otherwise: Joi.forbidden()
+  }),
+
+  // Fields for 'updateStatus' operation
+  note: Joi.when('operation', {
+    is: 'updateStatus',
+    then: Joi.string().trim().max(500).optional(),
+    otherwise: Joi.forbidden()
+  }),
+  tracking: Joi.when('operation', {
+    is: 'updateStatus',
+    then: trackingSchema.optional(),
+    otherwise: Joi.forbidden()
+  }),
+
+  // Fields for 'getStats' and 'getAllOrders' operations
+  startDate: Joi.when('operation', {
+    is: Joi.valid('getStats', 'getAllOrders'),
+    then: Joi.date().optional(),
+    otherwise: Joi.forbidden()
+  }),
+  endDate: Joi.when('operation', {
+    is: Joi.valid('getStats', 'getAllOrders'),
+    then: Joi.date().min(Joi.ref('startDate')).optional(),
+    otherwise: Joi.forbidden()
+  })
+});
+
+/**
  * Validation middleware factory
  */
 const validate = (schema, property = 'body') => {
@@ -332,5 +468,6 @@ module.exports = {
   listOrdersSchema,
   orderIdSchema,
   updateOrderStatusSchema,
-  orderStatsSchema
+  orderStatsSchema,
+  manageOrderSchema
 };

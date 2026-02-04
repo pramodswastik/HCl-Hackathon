@@ -14,7 +14,8 @@ const {
   reorder,
   getOrderStats,
   getOrderHistory,
-  getAllOrders
+  getAllOrders,
+  manageOrder
 } = require('../controllers/orderController');
 
 // Middleware
@@ -25,11 +26,24 @@ const {
   listOrdersSchema,
   orderIdSchema,
   updateOrderStatusSchema,
-  orderStatsSchema
+  orderStatsSchema,
+  manageOrderSchema
 } = require('../validators/orderValidator');
 
 // All order routes require authentication
 router.use(authenticate);
+
+/**
+ * @route   POST /api/orders/manage
+ * @desc    Consolidated order management endpoint
+ * @access  Private (Admin for certain operations)
+ * @body    { operation: 'create'|'list'|'get'|'updateStatus'|'reorder'|'getStats'|'getHistory'|'getAllOrders', ...operationData }
+ */
+router.post(
+  '/manage',
+  validate(manageOrderSchema, 'body'),
+  manageOrder
+);
 
 /**
  * @route   GET /api/orders/admin/all

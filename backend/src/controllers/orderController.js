@@ -625,6 +625,596 @@ const getOrderHistory = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Consolidated order handler - handles all order operations
+ * @route   POST /api/orders/manage
+ * @access  Private (Admin for certain operations)
+ */
+const manageOrder = asyncHandler(async (req, res) => {
+  const { operation } = req.body;
+
+  if (!operation) {
+    throw new ValidationError('Operation type is required');
+  }
+
+  switch (operation) {
+    case 'create':
+      return await handleCreateOrder(req, res);
+    
+    case 'list':
+      return await handleListOrders(req, res);
+    
+    case 'get':
+      return await handleGetOrder(req, res);
+    
+    case 'updateStatus':
+      // Check admin authorization
+      if (req.user.role !== 'admin') {
+        throw new ForbiddenError('Only admins can update order status');
+      }
+      return await handleUpdateStatus(req, res);
+    
+    case 'reorder':
+      return await handleReorder(req, res);
+    
+    case 'getStats':
+      // Check admin authorization
+      if (req.user.role !== 'admin') {
+        throw new ForbiddenError('Only admins can view order statistics');
+      }
+      return await handleGetStats(req, res);
+    
+    case 'getHistory':
+      return await handleGetHistory(req, res);
+    
+    case 'getAllOrders':
+      // Check admin authorization
+      if (req.user.role !== 'admin') {
+        throw new ForbiddenError('Only admins can view all orders');
+      }
+      return await handleGetAllOrders(req, res);
+    
+    default:
+      throw new ValidationError(`Invalid operation: ${operation}. Valid operations are: create, list, get, updateStatus, reorder, getStats, getHistory, getAllOrders`);
+  }
+});
+
+// Helper function for create operation
+const handleCreateOrder = async (req, res) => {
+  const {
+    items,
+    shippingAddress,
+    billingAddress,
+    paymentMethod,
+    shippingCost,
+    coupon,
+    notes
+  } = req.body;
+
+  // Validate and fetch product details
+  const orderItems = [];
+  
+  for (const item of items) {
+    const product = await Product.findById(item.product);
+    
+    if (!product) {
+      throw new ValidationError(`Product with ID ${item.product} not found`);
+    }
+    
+    if (product.status !== 'active') {
+      throw new ValidationError(`Product "${product.name}" is not available for purchase`);
+    }
+    
+    // Check stock availability
+    if (product.stock.trackInventory && product.stock.quantity < item.quantity) {
+      throw new ValidationError(
+        `Insufficient stock for "${product.name}". Available: ${product.stock.quantity}`
+      );
+    }
+
+    // Validate add-ons if provided
+    const validAddOns = [];
+    if (item.addOns && item.addOns.length > 0) {
+      for (const addOn of item.addOns) {
+        const productAddOn = product.addOns?.find(a => a.name === addOn.name);
+        if (productAddOn && productAddOn.isAvailable !== false) {
+          validAddOns.push({
+            name: productAddOn.name,
+            price: productAddOn.price
+          });
+        }
+      }
+    }
+
+    orderItems.push({
+      product: product._id,
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+      quantity: item.quantity,
+      addOns: validAddOns
+    });
+  }
+
+  // Calculate order totals
+  const { items: processedItems, pricing } = calculateOrderTotals(
+    orderItems,
+    DEFAULT_TAX_RATE,
+    shippingCost || 0,
+    coupon
+  );
+
+  // Create the order
+  const order = await Order.create({
+    user: req.user._id,
+    items: processedItems,
+    shippingAddress,
+    billingAddress: billingAddress || shippingAddress,
+    pricing,
+    coupon: coupon ? {
+      code: coupon.code,
+      discount: pricing.discount,
+      type: coupon.type
+    } : undefined,
+    paymentMethod,
+    notes: notes ? { customer: notes } : undefined,
+    statusHistory: [{
+      status: 'confirmed',
+      timestamp: new Date(),
+      updatedBy: req.user._id
+    }]
+  });
+
+  // Update product stock
+  for (const item of items) {
+    await Product.findByIdAndUpdate(item.product, {
+      $inc: { 'stock.quantity': -item.quantity }
+    });
+  }
+
+  // Populate order data for response
+  await order.populate([
+    { path: 'user', select: 'firstName lastName email' },
+    { path: 'items.product', select: 'name slug images' }
+  ]);
+
+  return res.status(201).json({
+    success: true,
+    message: 'Order created successfully',
+    data: order
+  });
+};
+
+// Helper function for list operation
+const handleListOrders = async (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    status,
+    paymentStatus,
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  } = req.body;
+
+  // Build query
+  const query = { user: req.user._id };
+
+  // Filter by status
+  if (status) {
+    query.status = status;
+  }
+
+  // Filter by payment status
+  if (paymentStatus) {
+    query.paymentStatus = paymentStatus;
+  }
+
+  // Calculate pagination
+  const pageNum = parseInt(page, 10);
+  const limitNum = parseInt(limit, 10);
+  const skip = (pageNum - 1) * limitNum;
+
+  // Sort options
+  const sortOptions = {};
+  sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+  // Execute query
+  const [orders, total] = await Promise.all([
+    Order.find(query)
+      .populate('user', 'firstName lastName email')
+      .populate('items.product', 'name slug images')
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNum)
+      .lean(),
+    Order.countDocuments(query)
+  ]);
+
+  return res.json({
+    success: true,
+    data: orders,
+    pagination: {
+      currentPage: pageNum,
+      totalPages: Math.ceil(total / limitNum),
+      totalItems: total,
+      itemsPerPage: limitNum,
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
+};
+
+// Helper function for get operation
+const handleGetOrder = async (req, res) => {
+  const { orderId } = req.body;
+  
+  if (!orderId) {
+    throw new ValidationError('Order ID is required');
+  }
+
+  const order = await Order.findById(orderId)
+    .populate('user', 'firstName lastName email')
+    .populate('items.product', 'name slug images price')
+    .populate('statusHistory.updatedBy', 'firstName lastName');
+
+  if (!order) {
+    throw new NotFoundError('Order not found');
+  }
+
+  // Check if user owns the order or is admin
+  if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    throw new ForbiddenError('Access denied. You can only view your own orders.');
+  }
+
+  return res.json({
+    success: true,
+    data: order
+  });
+};
+
+// Helper function for updateStatus operation
+const handleUpdateStatus = async (req, res) => {
+  const { orderId, status, note, tracking } = req.body;
+
+  if (!orderId) {
+    throw new ValidationError('Order ID is required');
+  }
+
+  if (!status) {
+    throw new ValidationError('Status is required');
+  }
+
+  const order = await Order.findById(orderId);
+
+  if (!order) {
+    throw new NotFoundError('Order not found');
+  }
+
+  // Validate status transition
+  const validTransitions = {
+    pending: ['confirmed', 'cancelled'],
+    confirmed: ['processing', 'cancelled'],
+    processing: ['shipped', 'cancelled'],
+    shipped: ['delivered', 'cancelled'],
+    delivered: ['refunded'],
+    cancelled: ['refunded'],
+    refunded: []
+  };
+
+  if (!validTransitions[order.status]?.includes(status)) {
+    throw new ValidationError(
+      `Invalid status transition. Cannot change from "${order.status}" to "${status}"`
+    );
+  }
+
+  // Update status
+  order.status = status;
+
+  // Add to status history
+  order.statusHistory.push({
+    status,
+    timestamp: new Date(),
+    note,
+    updatedBy: req.user._id
+  });
+
+  // Handle specific status updates
+  if (status === 'shipped' && tracking) {
+    order.tracking = {
+      carrier: tracking.carrier,
+      trackingNumber: tracking.trackingNumber,
+      estimatedDelivery: tracking.estimatedDelivery,
+      shippedAt: new Date()
+    };
+  }
+
+  if (status === 'delivered') {
+    order.tracking.deliveredAt = new Date();
+  }
+
+  if (status === 'cancelled' || status === 'refunded') {
+    // Restore stock for cancelled/refunded orders
+    for (const item of order.items) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { 'stock.quantity': item.quantity }
+      });
+    }
+
+    if (status === 'refunded') {
+      order.paymentStatus = 'refunded';
+    }
+  }
+
+  await order.save();
+
+  // Populate for response
+  await order.populate([
+    { path: 'user', select: 'firstName lastName email' },
+    { path: 'statusHistory.updatedBy', select: 'firstName lastName' }
+  ]);
+
+  return res.json({
+    success: true,
+    message: `Order status updated to "${status}"`,
+    data: order
+  });
+};
+
+// Helper function for reorder operation
+const handleReorder = async (req, res) => {
+  const { orderId } = req.body;
+
+  if (!orderId) {
+    throw new ValidationError('Order ID is required');
+  }
+
+  const originalOrder = await Order.findById(orderId);
+
+  if (!originalOrder) {
+    throw new NotFoundError('Original order not found');
+  }
+
+  // Check if user owns the order
+  if (originalOrder.user.toString() !== req.user._id.toString()) {
+    throw new ForbiddenError('Access denied. You can only reorder your own orders.');
+  }
+
+  // Prepare items for new order
+  const reorderItems = [];
+  const unavailableItems = [];
+
+  for (const item of originalOrder.items) {
+    const product = await Product.findById(item.product);
+
+    if (!product || product.status !== 'active') {
+      unavailableItems.push({
+        name: item.name,
+        reason: 'Product no longer available'
+      });
+      continue;
+    }
+
+    if (product.stock.trackInventory && product.stock.quantity < item.quantity) {
+      if (product.stock.quantity > 0) {
+        // Partial availability
+        reorderItems.push({
+          product: product._id,
+          name: product.name,
+          sku: product.sku,
+          price: product.price,
+          quantity: product.stock.quantity,
+          addOns: item.addOns
+        });
+        unavailableItems.push({
+          name: item.name,
+          reason: `Only ${product.stock.quantity} available (requested ${item.quantity})`
+        });
+      } else {
+        unavailableItems.push({
+          name: item.name,
+          reason: 'Out of stock'
+        });
+      }
+      continue;
+    }
+
+    reorderItems.push({
+      product: product._id,
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+      quantity: item.quantity,
+      addOns: item.addOns
+    });
+  }
+
+  if (reorderItems.length === 0) {
+    throw new ValidationError('None of the items from the original order are available');
+  }
+
+  // Calculate new order totals
+  const { items: processedItems, pricing } = calculateOrderTotals(
+    reorderItems,
+    DEFAULT_TAX_RATE,
+    originalOrder.pricing.shipping
+  );
+
+  // Create the new order
+  const newOrder = await Order.create({
+    user: req.user._id,
+    items: processedItems,
+    shippingAddress: originalOrder.shippingAddress,
+    billingAddress: originalOrder.billingAddress,
+    pricing,
+    paymentMethod: originalOrder.paymentMethod,
+    notes: {
+      customer: `Reorder from order #${originalOrder.orderNumber}`
+    },
+    statusHistory: [{
+      status: 'pending',
+      timestamp: new Date(),
+      note: `Reordered from order #${originalOrder.orderNumber}`,
+      updatedBy: req.user._id
+    }]
+  });
+
+  // Update product stock
+  for (const item of reorderItems) {
+    await Product.findByIdAndUpdate(item.product, {
+      $inc: { 'stock.quantity': -item.quantity }
+    });
+  }
+
+  // Populate order data for response
+  await newOrder.populate([
+    { path: 'user', select: 'firstName lastName email' },
+    { path: 'items.product', select: 'name slug images' }
+  ]);
+
+  return res.status(201).json({
+    success: true,
+    message: unavailableItems.length > 0 
+      ? 'Order created with some items modified or unavailable' 
+      : 'Order created successfully',
+    data: newOrder,
+    unavailableItems: unavailableItems.length > 0 ? unavailableItems : undefined,
+    originalOrderNumber: originalOrder.orderNumber
+  });
+};
+
+// Helper function for getStats operation
+const handleGetStats = async (req, res) => {
+  const { startDate, endDate } = req.body;
+
+  const stats = await Order.getStatistics(startDate, endDate);
+
+  return res.json({
+    success: true,
+    data: stats
+  });
+};
+
+// Helper function for getHistory operation
+const handleGetHistory = async (req, res) => {
+  const userId = req.user._id;
+
+  // Get order summary for user
+  const [orderStats, recentOrders, frequentProducts] = await Promise.all([
+    // Total orders and spending
+    Order.aggregate([
+      { $match: { user: userId } },
+      {
+        $group: {
+          _id: null,
+          totalOrders: { $sum: 1 },
+          totalSpent: { $sum: '$pricing.total' },
+          averageOrderValue: { $avg: '$pricing.total' }
+        }
+      }
+    ]),
+    // Recent 5 orders
+    Order.find({ user: userId })
+      .select('orderNumber status pricing.total createdAt')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean(),
+    // Most frequently ordered products
+    Order.aggregate([
+      { $match: { user: userId } },
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: '$items.product',
+          name: { $first: '$items.name' },
+          totalQuantity: { $sum: '$items.quantity' },
+          orderCount: { $sum: 1 }
+        }
+      },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 5 }
+    ])
+  ]);
+
+  return res.json({
+    success: true,
+    data: {
+      summary: orderStats[0] || {
+        totalOrders: 0,
+        totalSpent: 0,
+        averageOrderValue: 0
+      },
+      recentOrders,
+      frequentProducts
+    }
+  });
+};
+
+// Helper function for getAllOrders operation
+const handleGetAllOrders = async (req, res) => {
+  const {
+    page = 1,
+    limit = 10,
+    status,
+    startDate,
+    endDate,
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  } = req.body;
+
+  // Build query
+  const query = {};
+
+  // Filter by status
+  if (status) {
+    query.status = status;
+  }
+
+  // Filter by date range
+  if (startDate || endDate) {
+    query.createdAt = {};
+    if (startDate) {
+      query.createdAt.$gte = new Date(startDate);
+    }
+    if (endDate) {
+      query.createdAt.$lte = new Date(endDate);
+    }
+  }
+
+  // Calculate pagination
+  const pageNum = parseInt(page, 10);
+  const limitNum = parseInt(limit, 10);
+  const skip = (pageNum - 1) * limitNum;
+
+  // Sort options
+  const sortOptions = {};
+  sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+  // Execute query
+  const [orders, total] = await Promise.all([
+    Order.find(query)
+      .populate('user', 'firstName lastName email')
+      .populate('items.product', 'name slug images')
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNum)
+      .lean(),
+    Order.countDocuments(query)
+  ]);
+
+  return res.json({
+    success: true,
+    data: orders,
+    pagination: {
+      page: pageNum,
+      totalPages: Math.ceil(total / limitNum),
+      total: total,
+      limit: limitNum,
+      hasNextPage: pageNum < Math.ceil(total / limitNum),
+      hasPrevPage: pageNum > 1
+    }
+  });
+};
+
 module.exports = {
   createOrder,
   getOrders,
@@ -633,5 +1223,6 @@ module.exports = {
   reorder,
   getOrderStats,
   getOrderHistory,
-  getAllOrders
+  getAllOrders,
+  manageOrder
 };

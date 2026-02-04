@@ -3,63 +3,106 @@ import api from './api';
 const ORDERS_URL = '/orders';
 
 const orderService = {
+  // Consolidated order management API
+  manageOrder: async (operation, data = {}) => {
+    const response = await api.post(`${ORDERS_URL}/manage`, {
+      operation,
+      ...data
+    });
+    return response.data;
+  },
+
   // Get user orders with pagination
   getOrders: async (params = {}) => {
-    const queryParams = new URLSearchParams();
+    // Use consolidated API
+    const response = await api.post(`${ORDERS_URL}/manage`, {
+      operation: 'list',
+      page: params.page || 1,
+      limit: params.limit || 10,
+      status: params.status,
+      paymentStatus: params.paymentStatus,
+      sortBy: params.sortBy || 'createdAt',
+      sortOrder: params.sortOrder || 'desc'
+    });
     
-    if (params.page) queryParams.append('page', params.page);
-    if (params.limit) queryParams.append('limit', params.limit);
-    if (params.status) queryParams.append('status', params.status);
-    
-    const response = await api.get(`${ORDERS_URL}?${queryParams.toString()}`);
     const { data, pagination } = response.data;
     return {
       orders: data || [],
-      pagination: pagination || { page: 1, total: 0, totalPages: 0 }
+      pagination: pagination || { currentPage: 1, totalItems: 0, totalPages: 0 }
     };
   },
 
   // Get single order by ID
   getOrder: async (id) => {
-    const response = await api.get(`${ORDERS_URL}/${id}`);
+    // Use consolidated API
+    const response = await api.post(`${ORDERS_URL}/manage`, {
+      operation: 'get',
+      orderId: id
+    });
     return response.data.data || response.data;
   },
 
   // Create new order
   createOrder: async (orderData) => {
-    const response = await api.post(ORDERS_URL, orderData);
+    // Use consolidated API
+    const response = await api.post(`${ORDERS_URL}/manage`, {
+      operation: 'create',
+      ...orderData
+    });
     return response.data.data || response.data;
   },
 
   // Update order status (Admin)
-  updateOrderStatus: async (id, status) => {
-    const response = await api.put(`${ORDERS_URL}/${id}/status`, { status });
+  updateOrderStatus: async (id, status, note = null, tracking = null) => {
+    // Use consolidated API
+    const payload = {
+      operation: 'updateStatus',
+      orderId: id,
+      status
+    };
+    
+    if (note) payload.note = note;
+    if (tracking) payload.tracking = tracking;
+    
+    const response = await api.post(`${ORDERS_URL}/manage`, payload);
     return response.data;
   },
 
   // Reorder - create order from previous order
   reorder: async (orderId) => {
-    const response = await api.post(`${ORDERS_URL}/${orderId}/reorder`);
+    // Use consolidated API
+    const response = await api.post(`${ORDERS_URL}/manage`, {
+      operation: 'reorder',
+      orderId
+    });
     return response.data;
   },
 
-  // Cancel order
+  // Cancel order (using updateStatus with 'cancelled' status)
   cancelOrder: async (id) => {
-    const response = await api.put(`${ORDERS_URL}/${id}/cancel`);
+    // Use consolidated API
+    const response = await api.post(`${ORDERS_URL}/manage`, {
+      operation: 'updateStatus',
+      orderId: id,
+      status: 'cancelled'
+    });
     return response.data;
   },
 
   // Get all orders (Admin)
   getAllOrders: async (params = {}) => {
-    const queryParams = new URLSearchParams();
+    // Use consolidated API
+    const response = await api.post(`${ORDERS_URL}/manage`, {
+      operation: 'getAllOrders',
+      page: params.page || 1,
+      limit: params.limit || 10,
+      status: params.status,
+      startDate: params.startDate,
+      endDate: params.endDate,
+      sortBy: params.sortBy || 'createdAt',
+      sortOrder: params.sortOrder || 'desc'
+    });
     
-    if (params.page) queryParams.append('page', params.page);
-    if (params.limit) queryParams.append('limit', params.limit);
-    if (params.status) queryParams.append('status', params.status);
-    if (params.startDate) queryParams.append('startDate', params.startDate);
-    if (params.endDate) queryParams.append('endDate', params.endDate);
-    
-    const response = await api.get(`${ORDERS_URL}/admin/all?${queryParams.toString()}`);
     const { data, pagination } = response.data;
     return {
       orders: data || [],
@@ -68,8 +111,25 @@ const orderService = {
   },
 
   // Get order statistics (Admin)
-  getOrderStats: async () => {
-    const response = await api.get(`${ORDERS_URL}/admin/stats`);
+  getOrderStats: async (startDate = null, endDate = null) => {
+    // Use consolidated API
+    const payload = {
+      operation: 'getStats'
+    };
+    
+    if (startDate) payload.startDate = startDate;
+    if (endDate) payload.endDate = endDate;
+    
+    const response = await api.post(`${ORDERS_URL}/manage`, payload);
+    return response.data;
+  },
+
+  // Get order history
+  getOrderHistory: async () => {
+    // Use consolidated API
+    const response = await api.post(`${ORDERS_URL}/manage`, {
+      operation: 'getHistory'
+    });
     return response.data;
   },
 };
